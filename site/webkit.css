@@ -384,3 +384,46 @@ section[hidden]{display:none}
 body.demo-on header.top{transform:translateY(-100%)}
 header.top{transition:transform .4s var(--ease),border-color .3s}
 @media(prefers-reduced-motion:reduce){.demo-intro .hint{display:none}}
+
+/* ===== v7 ===== */
+.hero-row{align-items:center}
+.nums{grid-template-columns:repeat(2,max-content);gap:clamp(28px,5vw,72px)}
+.nums div{align-items:center}
+.nums span{max-width:18ch}
+.pains.v5 h3{font-size:clamp(28px,2.6vw,36px);max-width:10ch}
+.cap3 li.hl{color:var(--blue);padding-left:10px}
+.dfloat{position:absolute;left:50%;top:60px;z-index:7;display:flex;align-items:center;gap:12px;padding:11px 18px;border-radius:999px;background:var(--ink);color:#fff;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;box-shadow:0 24px 44px -18px rgba(16,19,33,.6);animation:lev 3.2s ease-in-out infinite alternate}
+.dfloat::before{content:"";position:absolute;left:50%;top:-14px;width:2px;height:14px;background:var(--ink)}
+.dfloat .bar{width:190px;height:8px;border-radius:4px;background:rgba(255,255,255,.16);overflow:hidden}
+.dfloat .bar i{display:block;height:100%;width:8%;background:#E5484D;transition:width .6s var(--ease),background .6s}
+@keyframes lev{from{transform:translate(-50%,0)}to{transform:translate(-50%,5px)}}
+@media(prefers-reduced-motion:reduce){.dfloat{animation:none;transform:translateX(-50%)}}
+@media(max-width:760px){.dfloat{top:52px;padding:8px 12px}.dfloat span{display:none}.dfloat .bar{width:110px}}
+.dimg .bad{position:relative;background:#DFE3EA}
+.dimg .bad img,.dimg .good img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.dimg .bad img{filter:saturate(.7)}
+.dimg .bad em{position:absolute;left:18px;bottom:16px;font-style:normal;background:rgba(255,255,255,.85);color:var(--ink2);padding:5px 9px;border-radius:6px;font-size:11px}
+.dimg .good::before{display:none}
+.dimg .good small{background:rgba(16,19,33,.65);padding:5px 9px;border-radius:6px;color:#fff}
+.road{margin-top:clamp(28px,5vh,44px)}
+.road .axis{display:grid;grid-template-columns:repeat(8,1fr);font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--line);padding-bottom:10px}
+.road .blocks{position:relative;height:64px;margin-top:14px}
+.blk{position:absolute;top:0;height:64px;left:calc(var(--s)/8*100%);width:calc((var(--e) - var(--s))/8*100% - 6px);border-radius:12px;display:flex;align-items:center;padding:0 16px;font-family:var(--display);font-variation-settings:"opsz" 48,"wght" 500;font-size:17px;letter-spacing:-.02em;transform-origin:left;transform:scaleX(0);opacity:0;transition:transform .8s var(--ease),opacity .4s}
+.road.in .blk{transform:none;opacity:1}
+.road.in .b2{transition-delay:.15s}.road.in .b3{transition-delay:.3s}.road.in .b4{transition-delay:.45s}.road.in .b5{transition-delay:.6s}
+.b1{background:var(--blue-soft);color:var(--ink)}.b2{background:var(--lilac);color:var(--dark)}.b3{background:var(--blue);color:#fff}.b4{background:var(--ink);color:#fff}.b5{background:#1F9D5B;color:#fff}
+.outs{position:relative;height:150px;margin-top:14px}
+.outs li{position:absolute;top:0;left:calc(var(--s)/8*100%);width:calc((var(--e) - var(--s))/8*100% - 6px);font-size:14px;color:var(--ink2);line-height:1.35;display:flex;gap:8px;align-items:flex-start}
+.outs li i{flex:0 0 8px;width:8px;height:8px;border-radius:50%;margin-top:6px}
+.c1{background:var(--blue-soft)}.c2{background:var(--lilac)}.c3{background:var(--blue)}.c4{background:var(--ink)}.c5{background:#1F9D5B}
+@media(max-width:760px){.road .axis{display:none}.road .blocks,.outs{height:auto;display:grid;gap:10px}.blk,.outs li{position:static;width:auto;transform:none;opacity:1}.outs li{margin-bottom:6px}.road .blocks{margin-top:0}}
+.me{margin-top:14px}
+.me b{display:block;font-size:17px;font-weight:700}
+.me span{display:block;color:var(--mute);font-size:14px;margin-top:2px}
+.me a{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:13.5px;color:var(--ink2)}
+.me a svg{width:14px;height:14px}
+.me a:hover{color:var(--blue)}
+.dhero h4 .tag{left:auto;right:0;top:-8px;bottom:auto;transform:translateY(-100%)}
+.dhero h4.ok .tag{transform:translateY(-100%)}
+.dtrust .tag{left:calc(100% + 12px);right:auto;top:50%;bottom:auto;transform:translateY(-50%);max-width:220px}
+.dtrust.ok .tag{transform:translateY(-50%)}
