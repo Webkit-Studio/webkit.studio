@@ -3,11 +3,12 @@ const root=document.getElementById('frame')||document.documentElement; root.clas
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches, rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const inViewer=!!document.getElementById('frame');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), lerp=(a,b,t)=>a+(b-a)*t, easeOut=t=>1-Math.pow(1-t,3);
 // header
 const hdr=$('#top'); if(hdr) addEventListener('scroll',()=>hdr.classList.toggle('s',scrollY>8),{passive:true});
 // reveal
 const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{rootMargin:'0px 0px -8% 0px',threshold:.08});
-$$('.rv, .ph, .pc').forEach(el=>io.observe(el));
+$$('.rv, .ph, .pc, .weeks, .pj').forEach(el=>io.observe(el));
 // cursor + hero weight + magnetic
 let mx=-9999,my=-9999; const cur=$('#cur'); const words=$$('#q .w'); const mags=$$('[data-mag]');
 if(fine&&cur&&!inViewer){ addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY; cur.classList.add('on');},{passive:true}); document.addEventListener('mouseleave',()=>cur.classList.remove('on'));
@@ -22,46 +23,41 @@ function loop(){
   requestAnimationFrame(loop);
 }
 if(!rm) requestAnimationFrame(loop);
-// demo: the big computer
+// demo: obrazovka přebírá okno při scrollu
 const mac=$('#mac');
 if(mac){
-  const pg=$('#macpg'), shell=$('.mac-shell',mac), W=1200;
-  function fit(){ const s=Math.min(1,mac.clientWidth/W); pg.style.transform=`scale(${s})`; shell.style.height=(pg.offsetHeight*s)+'px'; }
-  new ResizeObserver(fit).observe(mac); new ResizeObserver(fit).observe(pg); fit();
-  // grows to the full width of the screen while it scrolls into view
-  const wrapEl=mac.parentElement;
-  function grow(){ const r=wrapEl.getBoundingClientRect(); const vh=innerHeight; const g=Math.max(0,Math.min(1,(vh*0.9-r.top)/(vh*0.6))); mac.style.setProperty('--g',g.toFixed(3)); mac.classList.toggle('grow',g>0.02); const maxw=1280+(wrapEl.clientWidth-1280)*g; mac.style.maxWidth=(g>0.02?Math.max(1280,maxw):1280)+'px'; }
+  const sec=$('#demo'), intro=$('#dintro'), pg=$('#macpg'), shell=$('.mac-shell',mac), W=1200;
+  function fit(){ const sw=mac.clientWidth/W, sh=(shell.clientHeight||720)/740; const s=Math.min(sw,sh); pg.style.transform=`scale(${s})`; pg.style.left=Math.max(0,(mac.clientWidth-W*s)/2)+'px'; }
+  new ResizeObserver(fit).observe(mac); new ResizeObserver(fit).observe(shell); fit();
+  const pin=$('.demo-pin',sec);
+  function grow(){ if(rm) return; const r=sec.getBoundingClientRect(); const vh=pin.clientHeight||innerHeight; const g=easeOut(clamp(-r.top/(vh*1.1),0,1));
+    intro.style.opacity=String(1-Math.min(1,g*1.8)); intro.style.transform=`scale(${1-g*.06})`;
+    document.body.classList.toggle('demo-on',g>.85);
+    const vw=sec.clientWidth||innerWidth, narrow=vw<760; mac.style.width=lerp(narrow?vw*.92:vw*.72,vw,g)+'px'; mac.style.height=lerp(vh*.62,vh,g)+'px'; mac.style.setProperty('--g',g.toFixed(3)); }
   if(!rm){ addEventListener('scroll',grow,{passive:true}); addEventListener('resize',grow); grow(); }
-  const DATA={
-    h:['20 %','Lidé přečtou průměrně jen pětinu textu na stránce. První věta musí říct, co děláte.','Nielsen Norman Group'],
-    c:['57 %','Víc než polovinu času stráví návštěvník na první obrazovce. Tlačítko patří tam.','Nielsen Norman Group, 2018'],
-    t:['92 %','Doporučení jiných lidí věří víc než jakékoliv reklamě. Reference vedle tlačítka pomáhají.','Nielsen, Trust in Advertising'],
-    i:['+45 %','Skutečná fotka místo stock fotky zvedla počet registrací o 45 procent.','MECLABS, Harrington Movers'],
-    f:['+120 %','Zkrácení formuláře z jedenácti polí na čtyři zvedlo počet odeslání o 120 procent.','Imagescape, cit. HubSpot'],
-    s:['53 %','Přes polovinu návštěv z mobilu odejde, když se stránka načítá déle než tři sekundy.','Google / SOASTA, 2017']
-  };
-  const state={}; const keys=['h','c','t','i','f','s']; keys.forEach(k=>state[k]=false);
-  const labels=['nízká','nízká','vyšší','vyšší','dobrá','vysoká','vysoká'];
-  const stat=$('#dstat'); let statT;
-  function showStat(k){ const d=DATA[k]; $('#dsn').textContent=d[0]; $('#dst').textContent=d[1]; $('#dss').textContent=d[2]; stat.hidden=false; stat.style.animation='none'; void stat.offsetWidth; stat.style.animation=''; clearTimeout(statT); statT=setTimeout(()=>{stat.hidden=true;},5200); }
-  function update(){ const n=keys.filter(k=>state[k]).length; $('#dcount').textContent=`${n} z ${keys.length} opraveno`; $('#dbar').style.width=(8+n*15)+'%'; $('#dlab').textContent='šance na poptávku: '+labels[n]; if(n===keys.length) setTimeout(()=>{ stat.hidden=true; $('#dwin').classList.add('on'); },1200); }
-  $$('[data-fix]',mac).forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); const k=el.dataset.fix; if(state[k]) return; state[k]=true; el.classList.add('ok'); if(k==='s') el.innerHTML='<b>0,9 s</b> načítání'; fit(); showStat(k); update(); }));
+  const keys=['h','c','t','i','f','s']; const state={}; keys.forEach(k=>state[k]=false);
+  const bar=$('#dbar');
+  function update(){ const n=keys.filter(k=>state[k]).length; const w=8+n*15; bar.style.width=w+'%'; bar.style.background=n<2?'#E5484D':n<4?'#D99A00':'#1F9D5B'; if(n===keys.length){ $('#dwin').classList.add('on'); $('#dwint').textContent='Takhle to děláme. Chcete to i pro svůj web?'; } }
+  $$('[data-fix]',mac).forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); const k=el.dataset.fix; if(state[k]) return; state[k]=true; el.classList.add('ok'); if(k==='s'){ el.querySelector('b').textContent='0,9 s'; } update(); }));
   update();
 }
-// contact: rotating word
-const rot=$('#rot');
-if(rot&&!rm){ const wordsR=['web','značka','aplikace','projekt']; let i=0; setInterval(()=>{ const cur=rot.firstElementChild; const nx=document.createElement('span'); i=(i+1)%wordsR.length; nx.textContent=wordsR[i]; nx.className='in'; rot.appendChild(nx); cur.classList.add('out'); requestAnimationFrame(()=>requestAnimationFrame(()=>nx.classList.remove('in'))); setTimeout(()=>cur.remove(),500); },2600); }
-// team: avatar stack 7 -> 3 -> 7
+// kontakt: slovo se maže a píše po znacích
+const rotw=$('#rotw');
+if(rotw){ const wordsR=['web','značka','aplikace','projekt']; let i=0;
+  if(rm){ rotw.textContent=wordsR[0]; } else {
+    const step=()=>{ const cur=rotw.textContent; if(cur.length>0){ rotw.textContent=cur.slice(0,-1); setTimeout(step,55); return; } i=(i+1)%wordsR.length; const nx=wordsR[i]; let c=0; const type=()=>{ c++; rotw.textContent=nx.slice(0,c); if(c<nx.length) setTimeout(type,85); else setTimeout(step,2600); }; setTimeout(type,300); };
+    setTimeout(step,2600); } }
+// tým: 3, 6, 4, 7, 5, 3 lidí, lehce nepravidelně
 const avs=$('#avs');
-if(avs){ const imgs=$$('img',avs), lab=$('#avn'); const step=38;
-  function lay(n){ imgs.forEach((im,i)=>{ const on=i<n; im.style.left=(Math.min(i,n-1)*step)+'px'; im.style.opacity=on?1:0; im.style.transform=on?'':'scale(.6)'; im.style.zIndex=10-i; }); lab.style.left=(n*step+30)+'px'; lab.textContent=n===7?'Velký projekt: 7 lidí':'Malý projekt: 3 lidé'; }
-  lay(7); if(!rm){ let big=true; setInterval(()=>{ big=!big; lay(big?7:3); },3200); } }
+if(avs){ const imgs=$$('img',avs); const step=38;
+  function lay(n){ imgs.forEach((im,i)=>{ const on=i<n; im.style.left=(Math.min(i,n-1)*step)+'px'; im.style.opacity=on?1:0; im.style.transform=on?'':'scale(.6)'; im.style.zIndex=10-i; }); }
+  const seq=[3,6,4,7,5,3], wait=[2400,3300,2700,3900,3000,2600]; let k=0; lay(7);
+  if(!rm){ const next=()=>{ lay(seq[k]); const w=wait[k]+Math.round((Math.random()-.5)*600); k=(k+1)%seq.length; setTimeout(next,w); }; setTimeout(next,1800); } }
 // poptávka form
 const form=$('#form');
 if(form){
   let size=null; $$('#size button').forEach(b=>b.addEventListener('click',()=>{ size=b.dataset.v; $$('#size button').forEach(x=>x.classList.toggle('on',x===b)); }));
   const q=new URLSearchParams(location.search); const ta=$('#co'); if(q.get('co')==='sprint'&&ta){ ta.value='Mám zájem o Sprint 14 dní. '; }
-  // typewriter of typical client situations inside the field
   const ghost=$('#ghost'), wrapT=$('.tawrap');
   if(ghost&&ta){ const ex=['Potřebujeme nový web. Ten současný nám nepřivádí poptávky a nejde v něm nic změnit.','Chceme sjednotit, jak firma vypadá na autech, na webu a v nabídkách.','Nenašli jsme systém, který zvládne naše zakázky. Tabulky a formuláře už nestačí.','Rozjíždíme nový produkt a potřebujeme stránku, která bude do měsíce fungovat.'];
     const sync=()=>wrapT.classList.toggle('typing',ta.value.length>0||document.activeElement===ta); ta.addEventListener('input',sync); ta.addEventListener('focus',sync); ta.addEventListener('blur',sync);
