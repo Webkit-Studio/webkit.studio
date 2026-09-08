@@ -4,39 +4,44 @@
    pět stejně širokých karet, v každé malé pravítko osmi týdnů
    s vyznačenou fází. Šířka už nenese informaci, tu nese pravítko
    a text. Všechno je vidět hned, nic se neschovává.
+
    KAM TO PATŘÍ: na konec souboru site/webflow/page-late.css, tedy do
-   HTML Embedu na konci stránky. Do hlavičky ne — tam je strop 10 000
-   znaků a page.css z něj má 10 411. Sekce Postup je pod ohybem, takže
-   je pozdní embed přesně to místo, kam podle README patří.
+   HTML Embedu na konci stránky. Do hlavičky ne: nasazený <style> v
+   hlavičce má 7 818 znaků z povolených 10 000, takže tam zbývá 2 182 —
+   a tenhle soubor má po odstranění komentářů 3 296. Nevejde se.
+
+   NEJDŘÍV SMAZAT (jinak tohle nebude fungovat):
+   1. site/webflow/page.css — celý oddíl „4b. POSTUP NA UZKYCH SIRKACH"
+      (řádky 178–204). Zůstal by po něm pseudoprvek ::after s „+"
+      uvnitř každé karty na mobilu, který nemá co rozbalovat.
+   2. site/webflow/demo.css — řádky 168–170.
+   3. site/webflow/page-home.js — blok „postup: na mobilu se blok
+      po klepnuti rozbali" (proměnná bl a bl.forEach).
+   4. ve Webflow atribut tabindex="0" na .process_block.
+   Všechno v JEDNOM publikování společně s tímhle souborem.
    ══════════════════════════════════════════════════════════════ */
 
-/* ---------- 1. co odchází ----------
-   Rychlá záplata. Ve Webflow ta dvě pole rovnou smaž, ať nezůstanou
-   v HTML — jinak si cenu přečte kdokoli ve zdrojáku i Google. */
-#postup .process_price,
-#postup .process_pop-out{display:none!important}
-
-/* ---------- 2. jedna barva v pěti tintách, plus výřez pravítka ----
-   --tint  … barva fáze (lila → plná značková modrá; v pravítku
-             musí být vidět proti šedým dílkům, proto ne bledší)
-   --w     … kolik z osmi týdnů fáze zabírá
-   --p     … kam se ten výřez v pravítku posadí
-             (procenta pozice pozadí počítají zbytek, ne celek,
-              proto 14,29 / 33,33 / 80 / 100 a ne 12,5 / 25 …) */
+/* ---------- 1. barvy fází a výřez pravítka ----------
+   --tint … barva fáze (lila → plná značková modrá; v pravítku musí
+            být vidět proti šedým dílkům, proto ne bledší)
+   --w    … kolik z osmi týdnů fáze zabírá
+   --p    … kam se ten výřez v pravítku posadí. Procentní pozice
+            pozadí se počítá ze zbytku (šířka pruhu − šířka výřezu),
+            ne z celku — proto 14,2857 / 33,3333 / 80 / 100. */
 #postup .process_block.is-b1{--tint:#8A96FF;--w:12.5%;--p:0%}
 #postup .process_block.is-b2{--tint:#6E7BFB;--w:12.5%;--p:14.2857%}
 #postup .process_block.is-b3{--tint:#4A57EE;--w:25%;  --p:33.3333%}
 #postup .process_block.is-b4{--tint:#2A38EA;--w:37.5%;--p:80%}
 #postup .process_block.is-b5{--tint:#1D2BE8;--w:12.5%;--p:100%}
 
-/* ---------- 3. pravítko nad pásem zůstane, jen ztichne ---------- */
+/* ---------- 2. pravítko nad pásem zůstane, jen ztichne ---------- */
 #postup .process_axis{
   border-bottom:1px solid var(--line);
   padding-bottom:.625rem;
 }
 #postup .process_axis-item{padding-left:.125rem}
 
-/* ---------- 4. pás pěti karet ---------- */
+/* ---------- 3. pás pěti karet ---------- */
 #postup .process_track{
   position:static;
   height:auto;
@@ -48,13 +53,9 @@
 }
 
 /* Bublina přestane být bublinou: display:contents zruší její krabici
-   a texty se stanou přímo položkami karty. visibility/opacity jsou
-   tu kvůli staršímu pravidlu v demo.css — až ho smažeš, můžou pryč. */
-#postup .process_track .process_pop{
-  display:contents;
-  visibility:visible;
-  opacity:1;
-}
+   a texty se stanou přímo položkami karty. Jsou to obyčejné divy
+   bez role, takže se tím nic nerozbije v přístupnosti. */
+#postup .process_track .process_pop{display:contents}
 
 #postup .process_track .process_block{
   position:relative;
@@ -69,7 +70,8 @@
   border:1px solid var(--line);
   border-radius:1rem;
   cursor:default;
-  font-family:var(--sans);
+  /* --sans na #postup neexistuje (je jen uvnitř #demo). */
+  font-family:var(--_typography---font-styles--body);
   font-size:1rem;
   font-weight:400;
   letter-spacing:0;
@@ -83,7 +85,6 @@
   border-color:var(--line2);
   box-shadow:0 26px 50px -34px rgba(16,19,33,.5);
 }
-#postup .process_track .process_block:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 
 /* pravítko v kartě: osm dílků a v nich vybarvená fáze */
 #postup .process_track .process_block::before{
@@ -128,16 +129,26 @@
   font-size:.875rem;line-height:1.5;color:var(--ink2);opacity:1;
 }
 
-/* ---------- 5. užší obrazovky ----------
-   1000–992 px je na pět sloupců málo, jde se na tři a pak na jeden.
-   Karty zůstávají stejné, jen se přeskládají. */
+/* ---------- 4. užší obrazovky ----------
+   Pod 1100 px je na pět sloupců málo. Jde se na dva a pátá karta
+   se roztáhne přes oba — pět karet ve třech sloupcích by nechalo
+   v druhé řadě prázdné místo. */
 @media screen and (max-width:1100px){
-  #postup .process_track{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #postup .process_track{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #postup .process_track .process_block.is-b5{grid-column:1 / -1}
   #postup .process_axis{display:none}
 }
 @media screen and (max-width:767px){
   #postup .process_track{grid-template-columns:minmax(0,1fr);gap:.625rem;margin-top:0}
+  #postup .process_track .process_block.is-b5{grid-column:auto}
   #postup .process_track .process_block{padding:1.125rem 1.125rem 1.25rem}
   #postup .process_block-name{font-size:1.25rem}
   #postup .process_pop-text{font-size:.9375rem}
+}
+
+/* ---------- 5. kdo si nepřeje pohyb ----------
+   Karta se nezvedá ani nestíní, jen ztmavne rámeček. */
+@media (prefers-reduced-motion:reduce){
+  #postup .process_track .process_block{transition:border-color .3s}
+  #postup .process_track .process_block:hover{transform:none;box-shadow:none}
 }

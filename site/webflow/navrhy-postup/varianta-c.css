@@ -4,18 +4,25 @@
    dráha: každá fáze je úsek, jehož VÝŠKA odpovídá délce. Osm
    týdnů tak není obrázek, ale skutečná vzdálenost, kterou čtenář
    projede. Text má konečně plnou šířku řádku.
+
    KAM TO PATŘÍ: na konec souboru site/webflow/page-late.css, tedy do
-   HTML Embedu na konci stránky. Do hlavičky ne — tam je strop 10 000
-   znaků a page.css z něj má 10 411. Sekce Postup je pod ohybem, takže
-   je pozdní embed přesně to místo, kam podle README patří.
+   HTML Embedu na konci stránky. Do hlavičky ne: nasazený <style> v
+   hlavičce má 7 818 znaků z povolených 10 000, takže tam zbývá 2 182 —
+   a tenhle soubor má po odstranění komentářů 4 190. Nevejde se.
+
+   NEJDŘÍV SMAZAT (jinak tohle nebude fungovat):
+   1. site/webflow/page.css — celý oddíl „4b. POSTUP NA UZKYCH SIRKACH"
+      (řádky 178–204). Jeho ::after s „+" by se na mobilu pral
+      s tečkou na konci dráhy a u fází 1–4 by přibyl „+", který
+      nemá co rozbalovat.
+   2. site/webflow/demo.css — řádky 168–170.
+   3. site/webflow/page-home.js — blok „postup: na mobilu se blok
+      po klepnuti rozbali" (proměnná bl a bl.forEach).
+   4. ve Webflow atribut tabindex="0" na .process_block.
+   Všechno v JEDNOM publikování společně s tímhle souborem.
    ══════════════════════════════════════════════════════════════ */
 
-/* ---------- 1. co odchází ----------
-   Rychlá záplata. Ve Webflow ta dvě pole rovnou smaž. */
-#postup .process_price,
-#postup .process_pop-out{display:none!important}
-
-/* ---------- 2. výška jednoho týdne a barvy fází ----------
+/* ---------- 1. výška jednoho týdne a barvy fází ----------
    --u je jediné číslo, kterým se celá sekce zkracuje a prodlužuje.
    8rem je minimum, do kterého se vejde text nejkratší fáze;
    celá dráha je pak 8× tolik, tedy 64rem. */
@@ -26,10 +33,10 @@
 #postup .process_block.is-b4{--tint:#2A38EA}
 #postup .process_block.is-b5{--tint:#1D2BE8}
 
-/* ---------- 3. dva sloupce: pravítko a dráha ----------
-   Nadpis, osa i pruh jsou ve Webflow sourozenci, takže stačí
-   udělat mřížku z jejich společného rodiče. Do struktury stránky
-   se nesahá. */
+/* ---------- 2. dva sloupce: pravítko a dráha ----------
+   Nadpis, osa i pruh jsou ve Webflow sourozenci uvnitř
+   .padding-section-medium, takže stačí udělat mřížku z jejich
+   společného rodiče. Do struktury stránky se nesahá. */
 #postup .padding-section-medium{
   display:grid;
   grid-template-columns:7rem minmax(0,1fr);
@@ -54,9 +61,10 @@
   line-height:1.2;
 }
 
-/* ---------- 4. dráha ----------
+/* ---------- 3. dráha ----------
    Kolejnice není zvláštní prvek — je to levý okraj úseků. Proto
-   se sama zbarvuje podle fáze a sama má správnou délku. */
+   se sama zbarvuje podle fáze a sama má správnou délku.
+   Řádky: 1 + 1 + 2 + 3 + 1 týden = osm. */
 #postup .process_track{
   position:static;
   height:auto;
@@ -66,13 +74,9 @@
 }
 
 /* Bublina přestane být bublinou: display:contents zruší její krabici
-   a texty se stanou přímo položkami úseku. visibility/opacity jsou
-   tu kvůli staršímu pravidlu v demo.css — až ho smažeš, můžou pryč. */
-#postup .process_track .process_pop{
-  display:contents;
-  visibility:visible;
-  opacity:1;
-}
+   a texty se stanou přímo položkami úseku. Jsou to obyčejné divy
+   bez role, takže se tím nic nerozbije v přístupnosti. */
+#postup .process_track .process_pop{display:contents}
 
 #postup .process_track .process_block{
   position:relative;
@@ -88,13 +92,14 @@
   background:none;
   padding:.5rem 0 1.5rem 2rem;
   cursor:default;
-  font-family:var(--sans);
+  /* --sans na #postup neexistuje (je jen uvnitř #demo). */
+  font-family:var(--_typography---font-styles--body);
   font-size:1rem;
   font-weight:400;
   letter-spacing:0;
   color:var(--ink);
 }
-/* puntík na začátku fáze, přesně v úrovni popisku týdne vlevo */
+/* puntík na začátku fáze, v úrovni popisku týdne vlevo */
 #postup .process_track .process_block::before{
   content:"";
   position:absolute;
@@ -119,7 +124,6 @@
   background-color:var(--bg);
   box-sizing:border-box;
 }
-#postup .process_track .process_block:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
 
 /* levý sloupec úseku: kdy, název, jak dlouho.
    Na desktopu je „Týden 1" schované — přesně to samé stojí
@@ -158,11 +162,11 @@
   font-size:.9375rem;line-height:1.55;color:var(--ink2);opacity:1;
 }
 
-/* ---------- 5. užší obrazovky ----------
-   Pod 991 px se pravítko nevejde (popisky týdnů jsou širší než
-   sloupec), takže mizí — týdny nese dál každý úsek sám
-   („Týden 1", „Týdny 3 až 7"). Poměrné výšky padají taky, dráha
-   zůstává: svislá časová osa, jak ji každý zná z mobilu. */
+/* ---------- 4. užší obrazovky ----------
+   Pod 991 px se pravítko nevejde, takže mizí — týdny nese dál
+   každý úsek sám („Týden 1", „Týdny 5 až 7"). Poměrné výšky
+   padají taky, dráha zůstává: svislá časová osa, jak ji každý
+   zná z mobilu. */
 @media screen and (max-width:991px){
   #postup .padding-section-medium{display:block}
   #postup .process_axis{display:none}
@@ -179,11 +183,10 @@
   }
   #postup .process_pop-when{display:block;grid-column:1;grid-row:1}
   #postup .process_block-weeks{grid-column:2;grid-row:1;justify-self:end;margin:0}
-  #postup .process_block-name{grid-column:1 / -1;grid-row:2}
+  #postup .process_block-name{grid-column:1 / -1;grid-row:2;font-size:1.5rem}
   #postup .process_pop-title{grid-column:1 / -1;grid-row:3;margin-top:.375rem}
   #postup .process_pop-text{grid-column:1 / -1;grid-row:4;max-width:none}
   #postup .process_track .process_block::before{top:.25rem}
   #postup .process_track .process_block.is-b5{padding-bottom:0}
   #postup .process_track .process_block.is-b5::after{display:none}
-  #postup .process_block-name{font-size:1.5rem}
 }
