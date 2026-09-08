@@ -9,8 +9,9 @@ Stav k 8. 9. 2026. Ověřeno na `webkit-studio.webflow.io`.
 Měření je nasazené a **funguje podle zákona**: bez souhlasu se neuloží ani jedna
 cookie, GA4 ani Clarity se vůbec nenačtou. Ověřil jsem to měřením, ne přečtením kódu.
 
-**GTM jsem ti na web nedal.** Vysvětlení a návod, jak ho zapnout, až ho budeš chtít,
-je na konci.
+**GTM je nasazený.** Kontejner `GTM-MQW8FHWR` se načítá na všech stránkách.
+Tagy v něm ale musíš jednou naimportovat — do té doby GA4 ani Clarity neměří.
+Import je jeden soubor a dvě minuty, návod je na konci.
 
 ---
 
@@ -19,8 +20,9 @@ je na konci.
 | Nástroj | Kdy se načte | Cookies | Co uvidíš |
 |---|---|---|---|
 | **Cloudflare Web Analytics** | vždy | žádné | Návštěvy, zdroje, stránky, rychlost z terénu |
-| **Google Analytics 4** | až po souhlasu | `_ga`, `_ga_ZREE72G532` | Chování, cesty, konverze |
-| **Microsoft Clarity** | až po souhlasu | `_clck`, `_clsk` | Nahrávky obrazovky, heatmapy, rage clicks |
+| **Google Tag Manager** | vždy | žádné | Nic sám neměří, jen spouští tagy níž |
+| **Google Analytics 4** | tag v GTM, až po souhlasu | `_ga`, `_ga_ZREE72G532` | Chování, cesty, konverze |
+| **Microsoft Clarity** | tag v GTM, až po souhlasu | `_clck`, `_clsk` | Nahrávky obrazovky, heatmapy, rage clicks |
 
 Cloudflare souhlas nepotřebuje, protože neukládá nic do prohlížeče a neidentifikuje
 návštěvníka. To je celý důvod, proč ho tam mám: **i když nikdo nesouhlasí, pořád
@@ -34,9 +36,17 @@ s chybou 406, takže jsou vložené přes registrované skripty.
 
 | Skript | Kde | Co dělá |
 |---|---|---|
-| `wkConsent` | hlavička | Nastaví Consent Mode v2 na *odmítnuto*, načte Cloudflare, připraví funkci pro zapnutí zbytku |
-| `wkCookieBar` | patička | Vykreslí lištu, uloží volbu, po souhlasu zapne GA4 a Clarity |
-| `wkForms` | patička | Drobnost: přepíše výchozí texty ve formuláři |
+| `wkConsentGtm` | hlavička | Consent Mode v2 na *odmítnuto*, Cloudflare beacon, pak načte GTM |
+| `wkCookieBar` | patička | Vykreslí lištu, uloží volbu, po souhlasu pošle `consent update` |
+| `wkFormsDl` | patička | Placeholdery ve formuláři + pošle `form_submit` do dataLayer |
+
+Pořadí v `wkConsentGtm` je celý vtip: `dataLayer` a `gtag` stub → souhlas na
+*odmítnuto* → Cloudflare → souhlas z minulé návštěvy → **teprve pak GTM**.
+Kdyby se GTM načetl dřív než výchozí souhlas, tagy by na chvíli běžely bez omezení.
+
+**Nepřepisuj registrované skripty přes API — Webflow to neumí** (`update_registered_script`
+vrací 404). Zaregistruj novou verzi pod novým názvem a přepni na ni přes
+`set_site_scripts`. Proto ta „divná" jména `wkConsentGtm` a `wkFormsDl`.
 
 Zdroje jsou v repu: `site/webflow/analytika/`.
 
@@ -62,9 +72,19 @@ Načetl jsem stránku v čistém prohlížeči a sledoval síťové požadavky a
 
 - **Před souhlasem:** jediný odchozí požadavek na měření byl Cloudflare beacon.
   Cookies: **žádné**.
-- **Po kliknutí na Souhlasím:** naběhl `googletagmanager.com/gtag/js`,
-  `clarity.ms/tag/yf3smugrpy` a odeslal se první `collect`.
-  Cookies: `_ga`, `_ga_ZREE72G532`, `_clck`, `_clsk`.
+- **Po kliknutí na Souhlasím:** do `dataLayer` padne `consent update`.
+  Cookies: **zatím žádné, protože kontejner je prázdný.** Jakmile
+  naimportuješ tagy a dáš Publish, naskočí `_ga`, `_ga_ZREE72G532`, `_clck`, `_clsk`.
+
+Poslední měření na produkci (`webkit.studio`, 8. 9. 2026):
+
+```
+PŘED SOUHLASEM   cookies: 0
+                 dataLayer: consent default, js, gtm.js, gtm.dom, gtm.load
+                 google-analytics: 0   clarity: 0   cloudflare: 2
+PO SOUHLASU      cookies: 0
+                 dataLayer: + consent update
+```
 
 ## Lišta se souhlasem
 
@@ -80,12 +100,11 @@ co sbírám z formuláře, proč, jak dlouho to držím a komu se to dostane.
 
 ## Co změřit dál
 
-Až budeš mít data za pár týdnů, doplním do GA4 vlastní události. Tyhle dávají smysl:
+V kontejneru už jsou dvě události (`generate_lead` z formuláře a `cta_click`).
+Až budeš mít data za pár týdnů, dávají smysl tyhle:
 
 | Událost | Kdy | Co ti řekne |
 |---|---|---|
-| `cta_click` | Klik na Rezervovat úvodní hovor | Hlavní konverze |
-| `form_submit` | Odeslání poptávky z kontaktu | Skutečná konverze |
 | `demo_fix` | Klik na opravu v ukázce | Jestli ukázka funguje |
 | `demo_complete` | Opraveno všech šest | Kolik lidí projde celou ukázku |
 | `process_open` | Rozbalení bloku v Postupu | Co lidi na postupu zajímá |
@@ -97,27 +116,85 @@ Neděl to hned. Nejdřív chvíli sbírej základ, ať vidíš, co má vůbec sm
 
 # Google Tag Manager
 
-## Proč ho zatím nemáš na webu
+Kontejner **GTM-MQW8FHWR** už na webu běží. Chybí v něm tagy — ty si
+naimportuješ z připraveného souboru.
 
-Poslal jsi mi kontejner `GTM-MQW8FHWR` a zároveň napsal, že GTM neumíš vůbec.
-Prázdný kontejner na webu je jen skript navíc, který nic neměří a zpomaluje
-načítání. Proto tam zatím není.
+## Co udělat (dvě minuty)
 
-**Není to odmítnutí.** Až budeš chtít GTM používat, přepnu to za deset minut:
-z webu odeberu přímé napojení GA4 a Clarity a dám tam kontejner. Tenhle návod
-je na to, abys věděl, do čeho jdeš.
+1. Otevři [tagmanager.google.com](https://tagmanager.google.com), vyber kontejner **GTM-MQW8FHWR**.
+2. **Admin → Import Container**.
+3. Nahraj soubor [`docs/gtm/webkit-studio-gtm.json`](gtm/webkit-studio-gtm.json).
+4. Workspace: **Existing → Default Workspace**. Import option: **Merge → Overwrite conflicting tags**.
+   (Kontejner je prázdný, takže na nic nenarazíš. Overwrite je tam pro jistotu.)
+5. Zkontroluj náhled importu — má přijít **4 tagy, 3 spouštěče, 1 proměnná**.
+6. **Confirm**, pak nahoře vpravo **Preview**.
+7. V Preview projdi web: odmítni cookies → nesmí se spustit **nic**. Dej souhlas →
+   musí naskočit *GA4 – konfigurace* a *Microsoft Clarity*. Odešli formulář →
+   musí naskočit *GA4 – odeslání formuláře*.
+8. Teprve pak **Submit → Publish**.
 
-## K čemu GTM je
+Od okamžiku publikace měří GA4 i Clarity. Do té doby ne — Cloudflare běží pořád.
 
-Bez GTM: každý nový nástroj a každou novou událost musí někdo napsat do kódu webu.
+> **Import jsem nemohl vyzkoušet**, do tvého GTM nevidím. Kdyby ho odmítl,
+> napiš mi chybu. Ruční postup je stejný a je níž.
 
-S GTM: do kódu webu se jednou vloží kontejner a všechno ostatní pak zapínáš
-a vypínáš v jeho rozhraní, bez zásahu do webu.
+## Co v tom souboru je
 
-**Kdy se to vyplatí:** až budeš měřit víc než tři čtyři věci, nebo až budeš
-pouštět reklamu a potřebovat konverzní kódy.
+| Tag | Typ | Spustí se | Podmínka souhlasu |
+|---|---|---|---|
+| GA4 – konfigurace | Google Tag `G-ZREE72G532` | všechny stránky | `analytics_storage` |
+| Microsoft Clarity | Custom HTML | všechny stránky | `analytics_storage` |
+| GA4 – odeslání formuláře | GA4 Event `generate_lead` | událost `form_submit` | `analytics_storage` |
+| GA4 – klik na Rezervovat hovor | GA4 Event `cta_click` | klik na odkaz s `/poptavka` | `analytics_storage` |
 
-**Kdy se to nevyplatí:** teď. Máš tři nástroje a nulu událostí.
+**Proč `form_submit` z dataLayer a ne vestavěný spouštěč Form Submission:**
+Webflow odesílá formuláře AJAXem a žádnou událost nevystaví. Vestavěný spouštěč
+odeslání často mine, nebo se spustí i u formuláře, který spadl na chybu. Skript
+`wkFormsDl` proto hlídá, kdy se objeví Webflow blok „děkujeme", a teprve pak
+pošle do dataLayer:
+
+```js
+dataLayer.push({event:'form_submit', form_name:'…', form_page:'/…'})
+```
+
+To je jediné znamení, že poptávka opravdu prošla.
+
+## Kdybys to chtěl nasadit ručně
+
+Nemusíš — kód už na webu je. Tohle je pro případ, že bys web stěhoval jinam
+nebo chtěl vědět, co přesně se do stránky vkládá.
+
+**Hlavička** (Site settings → Custom code → Head code). Musí být **první**, dřív
+než cokoli jiného:
+
+```html
+<script>
+(function(){
+var K='wk-consent';
+window.dataLayer=window.dataLayer||[];
+function gtag(){dataLayer.push(arguments)}
+window.gtag=gtag;
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'granted',security_storage:'granted',wait_for_update:500});
+gtag('js',new Date());
+var b=document.createElement('script');b.defer=true;b.src='https://static.cloudflareinsights.com/beacon.min.js';
+b.setAttribute('data-cf-beacon','{"token":"63f4e42712ab4802adc333753f2078a3"}');document.head.appendChild(b);
+window.wkGrant=function(){gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'})};
+try{if(localStorage.getItem(K)==='all')window.wkGrant()}catch(e){}
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;
+j.src='https://www.googletagmanager.com/gtm.js?id='+i;f.parentNode.insertBefore(j,f)})(window,document,'script','dataLayer','GTM-MQW8FHWR');
+})();
+</script>
+```
+
+**Patička** (Footer code) — cookie lišta a měření formulářů. Zdroj je v repu:
+`site/webflow/analytika/2-cookiebar.js` a `site/webflow/analytika/3-forms.js`,
+obojí zabalit do `<script>`. Styly lišty jsou v
+`site/webflow/analytika/site-head.html`.
+
+**Standardní `<noscript>` iframe od Googlu jsem vynechal schválně.** Je určený
+pro návštěvníky s vypnutým JavaScriptem, jenže GA4, Clarity i celý souhlas
+běží na JavaScriptu. Ten iframe by nezměřil nic a jen přidal požadavek.
 
 ## Tři pojmy, které stačí znát
 
@@ -127,53 +204,15 @@ pouštět reklamu a potřebovat konverzní kódy.
 | **Trigger** | Kdy se to má poslat | Když někdo klikne na tlačítko |
 | **Variable** | Odkud vzít hodnotu | Text tlačítka, na které se kliklo |
 
-Vždycky to jde v tomhle pořadí: *když se stane trigger, pošle se tag, a do tagu
-se doplní variable*.
-
-## Jak ho nastavit, až budeš chtít
-
-### 1. Základní nastavení souhlasu
-
-V GTM otevři **Admin → Container Settings** a zapni **Additional Consent Checks**.
-Bez toho by GTM střílel tagy i bez souhlasu a celá práce, kterou jsem udělal, by
-byla k ničemu.
-
-### 2. GA4 tag
-
-- **Tags → New → Google Tag**
-- Tag ID: `G-ZREE72G532`
-- Trigger: **Initialization – All Pages**
-- V **Consent Settings** zaškrtni *Require additional consent* a přidej
-  `analytics_storage`
-
-### 3. Clarity tag
-
-- **Tags → New → Custom HTML**
-- Vlož skript Clarity (najdeš ho v `site/webflow/analytika/1-consent.js`)
-- Trigger: **All Pages**
-- Consent Settings: `analytics_storage`
-
-### 4. Událost na hlavní tlačítko
-
-- **Triggers → New → Click – All Elements**
-- Podmínka: *Click Text* obsahuje `Rezervovat úvodní hovor`
-- **Tags → New → GA4 Event**, název události `cta_click`, tenhle trigger
-
-### 5. Než to pustíš
-
-Zmáčkni **Preview**, otevři web a projdi ho. Musíš vidět, že se tagy spustí,
-až když dáš souhlas, a ne dřív. Teprve pak **Submit**.
-
-### 6. Řekni mi to
-
-Až budeš mít kontejner připravený, napiš mi. Z webu odeberu přímé napojení
-GA4 a Clarity a nasadím kontejner. Kdybych to udělal dřív, měřilo by se všechno
-dvakrát a čísla by byla nesmysl.
+Vždycky v tomhle pořadí: *když se stane trigger, pošle se tag, a do tagu se
+doplní variable*.
 
 ## Na co si dát pozor
 
-- **Nikdy nespouštěj tag na All Pages bez consent podmínky.** To je nejčastější
-  chyba a přesně kvůli ní chodí pokuty.
+- **Nikdy nespouštěj tag bez consent podmínky.** To je nejčastější chyba
+  a přesně kvůli ní chodí pokuty. Ve všech čtyřech tazích v souboru už podmínka je.
 - **Publikuj až po Preview.** Submit je živý okamžitě.
-- **Verze se dají vrátit.** Když něco pokazíš, ve **Versions** klikneš na starší
-  verzi a dáš Publish. Nic není nevratné.
+- **GA4 nedávej zároveň do GTM i přímo do stránky.** Přesně proto jsem přímé
+  napojení z webu odebral. Kdyby běželo obojí, každá návštěva by se počítala dvakrát.
+- **Verze se dají vrátit.** Ve **Versions** klikneš na starší verzi a dáš Publish.
+  Nic není nevratné.

@@ -10,8 +10,9 @@ ne ručním kopírováním.
 | `page-home.js` | HTML Embed na konci stránky (za patičkou), zabalený v `<script>` |
 | `page.css` | vlastní kód stránky, hlavička (`set_page_freeform_code`) |
 | `analytika/site-head.html` | vlastní kód webu, hlavička (`set_site_freeform_code`) |
-| `analytika/1-consent.js` | registrovaný skript `wkconsent`, hlavička |
+| `analytika/1-consent.js` | registrovaný skript `wkconsentgtm`, hlavička |
 | `analytika/2-cookiebar.js` | registrovaný skript `wkcookiebar`, patička |
+| `analytika/3-forms.js` | registrovaný skript `wkformsdl`, patička |
 
 ## Proč embed a ne vlastní kód stránky
 
@@ -29,6 +30,11 @@ strop 10 000 znaků a `demo.css` je delší. Embed limit nemá.
 vnucovala štítkům v ukázce `white-space:nowrap`, rámeček a verzálky — text
 z bubliny vytékal a nedal se přečíst. Uvnitř ukázky se proto jmenují `.dtag`.
 Než v embedu přidáš novou třídu, projeď si ji proti `webkit-studio.webflow.shared.*.css`.
+
+**Registrované skripty nejdou přepsat.** `update_registered_script` vrací 404.
+Novou verzi je potřeba zaregistrovat pod novým názvem (`register_inline_script`)
+a přepnout na ni přes `set_site_scripts`. Odtud jména `wkConsentGtm` a `wkFormsDl`.
+Limit zdrojáku je 2 000 znaků.
 
 **Škálování.** `.mac-pg` je 1200 px široká a škáluje se `transform: scale()`.
 Štítky jsou poznámky **nad** mockem, ne jeho součást, takže se s ním zvětšovat
