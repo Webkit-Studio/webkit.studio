@@ -73,8 +73,11 @@
 #demo .dtrust .good{display:flex;gap:8px;flex-wrap:wrap}
 #demo .dtrust em{font-style:normal;border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:12.5px;color:var(--ink2);background:#fff}
 #demo .dtrust .dtag{left:0;right:auto;top:calc(100% + 10px);bottom:auto;max-width:min(calc(var(--tw,300px)*1.7),480px)}
-#demo .dimg{height:340px;border-radius:16px;overflow:hidden}
-#demo .dimg .bad, #demo .dimg .good{height:100%;position:relative;background:#DFE3EA}
+/* overflow:hidden tady ořezával blikající tečku a čárkovaný rámeček, takže
+   u fotky jako u jediné nebylo poznat, že se na ni dá kliknout. Ořez patří
+   dovnitř na obrázky, ne na celý interaktivní blok. */
+#demo .dimg{height:340px;border-radius:16px}
+#demo .dimg .bad, #demo .dimg .good{height:100%;position:relative;background:#DFE3EA;border-radius:16px;overflow:hidden}
 #demo .dimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 #demo .dimg .bad img{filter:saturate(.7)}
 #demo .dimg .bad em{position:absolute;left:18px;bottom:16px;font-style:normal;background:rgba(255,255,255,.85);color:var(--ink2);padding:5px 9px;border-radius:6px;font-size:11px}

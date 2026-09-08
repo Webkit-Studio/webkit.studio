@@ -8,6 +8,17 @@ var cl=function(v,a,b){return Math.max(a,Math.min(b,v))},lp=function(a,b,t){retu
 /* obrazky v kartach jsou dekorace, ctecky je preskoci */
 qa('#brzdi .problem_visual').forEach(function(v){v.setAttribute('aria-hidden','true');});
 
+/* Krivka ve treti karte byla ve Webflow poskladana z divu se zaoblenymi rohy,
+   takze misto vzestupu a padu kreslila V. Vlozime stejne SVG jako prototyp v8;
+   puvodni divy schova page.css. Popisek "spusteni" zustava webflowovy. */
+var krivka=q('#brzdi .problem_visual.is-curve');
+if(krivka&&!q('.wk-krivka',krivka)){
+krivka.insertAdjacentHTML('beforeend','<svg class="wk-krivka" viewBox="0 0 300 170" preserveAspectRatio="none" aria-hidden="true" focusable="false">'+
+'<line x1="20" y1="150" x2="280" y2="150" stroke="#CDD2DC" stroke-width="1"/>'+
+'<path class="ln" d="M20 150 Q150 150 150 40" fill="none" stroke="#1D2BE8" stroke-width="2"/>'+
+'<path class="drop" d="M150 40 Q150 150 280 150" fill="none" stroke="#AEB5C4" stroke-width="2"/>'+
+'</svg>');}
+
 /* ---------- interaktivni ukazka ---------- */
 var sec=q('#demo'),mac=q('#mac');
 if(sec&&mac){

@@ -12,7 +12,7 @@ ne ručním kopírováním.
 | `analytika/site-head.html` | vlastní kód webu, hlavička (`set_site_freeform_code`) |
 | `analytika/1-consent.js` | registrovaný skript `wkconsentgtm`, hlavička |
 | `analytika/2-cookiebar.js` | registrovaný skript `wkcookiebar`, patička |
-| `analytika/3-forms.js` | registrovaný skript `wkformsdl`, patička |
+| `analytika/3-forms.js` | registrovaný skript `wkformsnames`, patička |
 
 ## Proč embed a ne vlastní kód stránky
 
@@ -33,8 +33,15 @@ Než v embedu přidáš novou třídu, projeď si ji proti `webkit-studio.webflo
 
 **Registrované skripty nejdou přepsat.** `update_registered_script` vrací 404.
 Novou verzi je potřeba zaregistrovat pod novým názvem (`register_inline_script`)
-a přepnout na ni přes `set_site_scripts`. Odtud jména `wkConsentGtm` a `wkFormsDl`.
+a přepnout na ni přes `set_site_scripts`. Odtud jména `wkConsentGtm` a `wkFormsNames`. Mazat staré registrace taky nejde
+(`delete_registered_script` vrací 400), nepoužité verze proto v seznamu zůstávají.
 Limit zdrojáku je 2 000 znaků.
+
+**Formulářová pole.** Webflow publikuje `name="field"`, `"field-2"` a poptávka
+pak chodí do e-mailu jako „Field: …". Nastavení Name přes API se do publikovaného
+HTML nepropíše a `set_attributes` na formulářová pole vrací chybu. Názvy proto
+přepisuje skript `3-forms.js` za běhu — Webflow serializuje formulář z DOM
+až při odeslání, takže se to na server dostane správně.
 
 **Škálování.** `.mac-pg` je 1200 px široká a škáluje se `transform: scale()`.
 Štítky jsou poznámky **nad** mockem, ne jeho součást, takže se s ním zvětšovat

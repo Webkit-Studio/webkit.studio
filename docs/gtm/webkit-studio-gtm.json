@@ -243,7 +243,7 @@
             ]
           }
         },
-        "notes": "Klik na jakýkoli odkaz mířící na /poptavka."
+        "notes": "Klik na jakýkoli odkaz mířící na #kontakt."
       }
     ],
     "trigger": [
@@ -284,7 +284,7 @@
         "accountId": "0",
         "containerId": "0",
         "triggerId": "4",
-        "name": "Klik – odkaz na poptávku",
+        "name": "Klik – odkaz na kontakt",
         "type": "LINK_CLICK",
         "fingerprint": "0",
         "filter": [
@@ -299,7 +299,7 @@
               {
                 "type": "TEMPLATE",
                 "key": "arg1",
-                "value": "/poptavka"
+                "value": "#kontakt"
               }
             ]
           }

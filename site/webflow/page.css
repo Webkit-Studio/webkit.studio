@@ -102,7 +102,7 @@
 #brzdi .problem_card:hover .problem_avatar,
 #brzdi .problem_card:hover .problem_curve-rise,
 #brzdi .problem_card:hover .problem_curve-fall,
-#brzdi .problem_card:hover .problem_curve-label{animation-play-state:running}
+#brzdi .problem_card:hover .problem_curve-label,#brzdi .problem_card:hover .wk-krivka path{animation-play-state:running}
 
 /* na dotyku se nedá najet myší, tak se to rozjede, jakmile je karta vidět */
 @media (hover:none){
@@ -111,7 +111,7 @@
   #brzdi .problem_card.is-in .problem_avatar,
   #brzdi .problem_card.is-in .problem_curve-rise,
   #brzdi .problem_card.is-in .problem_curve-fall,
-  #brzdi .problem_card.is-in .problem_curve-label{animation-play-state:running}
+  #brzdi .problem_card.is-in .problem_curve-label,#brzdi .problem_card.is-in .wk-krivka path{animation-play-state:running}
 }
 
 /* štítky se rozjedou doprava a zpátky, tečka se u toho rozsvítí */
@@ -145,6 +145,17 @@
 
 /* Křivka je ve Webflow poskládaná z divů, ne z SVG, takže stroke-dasharray
    nepomůže. Kreslení nahradíme odhalováním zleva přes clip-path. */
+/* Křivka byla poskládaná z divů se zaoblenými rohy, takže místo vzestupu
+   a pádu kreslila V. Skript na její místo vloží stejné SVG jako prototyp v8,
+   původní tři divy schováme. */
+#brzdi .problem_visual.is-curve .problem_curve-rise,
+#brzdi .problem_visual.is-curve .problem_curve-fall,
+#brzdi .problem_visual.is-curve .problem_curve-base{display:none}
+#brzdi .wk-krivka{position:absolute;inset:0;width:100%;height:100%}
+#brzdi .wk-krivka .ln{stroke-dasharray:300;stroke-dashoffset:0;animation:wk-draw2 3s var(--ease) infinite}
+#brzdi .wk-krivka .drop{stroke-dasharray:6 4;animation:wk-dash 1.2s linear infinite}
+@keyframes wk-draw2{0%{stroke-dashoffset:300}45%,100%{stroke-dashoffset:0}}
+@keyframes wk-dash{to{stroke-dashoffset:-20}}
 #brzdi .problem_curve-rise{animation:wk-draw 3.2s var(--ease) infinite}
 #brzdi .problem_curve-fall{animation:wk-fade 3.2s var(--ease) infinite}
 #brzdi .problem_curve-label{animation:wk-label 3.2s var(--ease) infinite}
@@ -181,15 +192,20 @@
    Nadpis vlevo, formulář vpravo. Nadpis má pevné zalomení na tři řádky,
    na mobilu se zalomení ruší, protože se dlouhý řádek nevejde. */
 
+/* Sekce zabírá celou obrazovku a nadpis jde přes celou šířku. V užším
+   sloupci (592 px) se prostřední řádek lámal na dva, protože rotující
+   slovo se nesmí zalomit — proto ta čtyři řádky místo tří. */
+#kontakt{min-height:100svh;display:flex;align-items:center}
+#kontakt>.padding-global{width:100%}
 #kontakt .contact_layout{
   display:grid;
-  grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  grid-template-columns:minmax(0,1fr) minmax(0,.8fr);
   gap:clamp(2rem,5vw,4.5rem);
   align-items:start;
 }
-#kontakt .contact_heading{grid-column:1;grid-row:1;max-width:none}
-#kontakt .contact_actions{grid-column:1;grid-row:2;margin-top:1.75rem}
-#kontakt .contact_layout > .w-form{grid-column:2;grid-row:1 / span 2}
+#kontakt .contact_heading{grid-column:1 / -1;grid-row:1;max-width:none;margin-bottom:clamp(1.5rem,4vh,3rem)}
+#kontakt .contact_actions{grid-column:1;grid-row:2;margin-top:0;align-self:start}
+#kontakt .contact_layout > .w-form{grid-column:2;grid-row:2}
 #kontakt .contact_rot{white-space:nowrap}
 
 #kontakt .w-form form{display:grid;gap:.875rem}
@@ -222,6 +238,7 @@
 }
 
 @media screen and (max-width:991px){
+  #kontakt{min-height:0;display:block}
   #kontakt .contact_layout{grid-template-columns:minmax(0,1fr)}
   #kontakt .contact_heading,#kontakt .contact_actions,
   #kontakt .contact_layout > .w-form{grid-column:1;grid-row:auto}

@@ -38,7 +38,7 @@ s chybou 406, takže jsou vložené přes registrované skripty.
 |---|---|---|
 | `wkConsentGtm` | hlavička | Consent Mode v2 na *odmítnuto*, Cloudflare beacon, pak načte GTM |
 | `wkCookieBar` | patička | Vykreslí lištu, uloží volbu, po souhlasu pošle `consent update` |
-| `wkFormsDl` | patička | Placeholdery ve formuláři + pošle `form_submit` do dataLayer |
+| `wkFormsNames` | patička | Názvy polí, placeholdery a `form_submit` do dataLayer |
 
 Pořadí v `wkConsentGtm` je celý vtip: `dataLayer` a `gtag` stub → souhlas na
 *odmítnuto* → Cloudflare → souhlas z minulé návštěvy → **teprve pak GTM**.
@@ -46,7 +46,9 @@ Kdyby se GTM načetl dřív než výchozí souhlas, tagy by na chvíli běžely 
 
 **Nepřepisuj registrované skripty přes API — Webflow to neumí** (`update_registered_script`
 vrací 404). Zaregistruj novou verzi pod novým názvem a přepni na ni přes
-`set_site_scripts`. Proto ta „divná" jména `wkConsentGtm` a `wkFormsDl`.
+`set_site_scripts`. Proto ta „divná" jména `wkConsentGtm` a `wkFormsNames`. Smazat starou registraci
+taky nejde (`delete_registered_script` vrací 400), takže v seznamu zůstávají
+nepoužité verze. Nevadí — aplikované jsou jen ty tři z tabulky.
 
 Zdroje jsou v repu: `site/webflow/analytika/`.
 
@@ -145,12 +147,12 @@ Od okamžiku publikace měří GA4 i Clarity. Do té doby ne — Cloudflare bě�
 | GA4 – konfigurace | Google Tag `G-ZREE72G532` | všechny stránky | `analytics_storage` |
 | Microsoft Clarity | Custom HTML | všechny stránky | `analytics_storage` |
 | GA4 – odeslání formuláře | GA4 Event `generate_lead` | událost `form_submit` | `analytics_storage` |
-| GA4 – klik na Rezervovat hovor | GA4 Event `cta_click` | klik na odkaz s `/poptavka` | `analytics_storage` |
+| GA4 – klik na Rezervovat hovor | GA4 Event `cta_click` | klik na odkaz s `#kontakt` | `analytics_storage` |
 
 **Proč `form_submit` z dataLayer a ne vestavěný spouštěč Form Submission:**
 Webflow odesílá formuláře AJAXem a žádnou událost nevystaví. Vestavěný spouštěč
 odeslání často mine, nebo se spustí i u formuláře, který spadl na chybu. Skript
-`wkFormsDl` proto hlídá, kdy se objeví Webflow blok „děkujeme", a teprve pak
+`wkFormsNames` proto hlídá, kdy se objeví Webflow blok „děkujeme", a teprve pak
 pošle do dataLayer:
 
 ```js
