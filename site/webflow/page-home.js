@@ -89,10 +89,6 @@ var stop=function(){pause=true;clearTimeout(rt);lis.forEach(function(l){l.classL
 cap.addEventListener('pointerenter',stop);cap.addEventListener('pointerdown',stop);
 cap.addEventListener('pointerleave',function(){if(!fine)return;clearTimeout(rt);rt=setTimeout(function(){pause=false;beh=0;},800);});}
 
-/* ---------- postup: na mobilu se blok po klepnuti rozbali ---------- */
-var bl=qa('#postup .process_block');
-bl.forEach(function(b){b.addEventListener('click',function(){if(innerWidth>767)return;var o=b.classList.contains('is-open');bl.forEach(function(x){x.classList.remove('is-open');});if(!o)b.classList.add('is-open');});b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();b.click();}});});
-
 /* ---------- kontakt: hlasky, ktere se samy vypisuji do pole Co resite ----------
    Stejne vety jako v prototypu v8. Placeholder zustava jako zaloha,
    kdyby tenhle kus nedobehl; CSS ho schova az kdyz obalka vznikne. */
