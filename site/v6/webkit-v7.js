@@ -3,18 +3,16 @@ const root=document.getElementById('frame')||document.documentElement; root.clas
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const fine=matchMedia('(hover:hover) and (pointer:fine)').matches, rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const inViewer=!!document.getElementById('frame');
-const main=$('main');
-const cw=()=>(main&&main.clientWidth)||innerWidth; // šířka kontejneru, ne okna (prohlížeč návrhů)
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), lerp=(a,b,t)=>a+(b-a)*t, easeOut=t=>1-Math.pow(1-t,3);
 // header
 const hdr=$('#top'); if(hdr) addEventListener('scroll',()=>hdr.classList.toggle('s',scrollY>8),{passive:true});
 // reveal
 const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} }),{rootMargin:'0px 0px -8% 0px',threshold:.08});
-$$('.rv, .road, .pj, .pain').forEach(el=>io.observe(el));
+$$('.rv, .ph, .pc, .weeks, .road, .pj').forEach(el=>io.observe(el));
 // cursor + hero weight + magnetic
 let mx=-9999,my=-9999; const cur=$('#cur'); const words=$$('#q .w'); const mags=$$('[data-mag]');
 if(fine&&cur&&!inViewer){ addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY; cur.classList.add('on');},{passive:true}); document.addEventListener('mouseleave',()=>cur.classList.remove('on'));
- document.addEventListener('pointerover',e=>{ if(e.target.closest('a,button,.fx,.blk')) cur.classList.add('big'); }); document.addEventListener('pointerout',e=>{ if(e.target.closest('a,button,.fx,.blk')) cur.classList.remove('big'); }); }
+ document.addEventListener('pointerover',e=>{ if(e.target.closest('a,button,.fx')) cur.classList.add('big'); }); document.addEventListener('pointerout',e=>{ if(e.target.closest('a,button,.fx')) cur.classList.remove('big'); }); }
 else if(fine){ addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;},{passive:true}); }
 let heroVisible=!!$('#q'); if($('#q')) new IntersectionObserver(es=>{heroVisible=es[0].isIntersecting;}).observe($('#q'));
 function loop(){
@@ -25,60 +23,42 @@ function loop(){
   requestAnimationFrame(loop);
 }
 if(!rm) requestAnimationFrame(loop);
-// proč: na mobilu se karty skládají na sebe, spodní se lehce zmenšují
-const pains=$('#pains');
-if(pains){ const cards=$$('.pain',pains); const h2=$('#brzdi h2');
-  function stack(){ if(cw()>760){ cards.forEach(c=>{c.style.transform='';c.style.opacity='';}); return; }
-    if(h2) pains.parentElement.style.setProperty('--h2h',h2.offsetHeight+'px');
-    const top=parseFloat(getComputedStyle(cards[0]).top)||170;
-    cards.forEach((c,i)=>{ const next=cards[i+1]; if(!next){ c.style.transform=''; return; } const r=next.getBoundingClientRect(); const p=clamp(1-(r.top-top)/(innerHeight*.6),0,1); c.style.transform=`scale(${1-p*.06}) translateY(${-p*8}px)`; c.style.opacity=String(1-p*.35); }); }
-  addEventListener('scroll',stack,{passive:true}); addEventListener('resize',stack); stack(); }
-// ukázka: počítač přebírá okno při scrollu, telefon na mobilu stojí
-const mac=$('#mac'), sec=$('#demo');
-if(mac&&sec){
-  const intro=$('#dintro'), pg=$('#macpg'), shell=$('.mac-shell',mac), W=1200, pin=$('.demo-pin',sec);
+// demo: obrazovka přebírá okno při scrollu
+const mac=$('#mac');
+if(mac){
+  const sec=$('#demo'), intro=$('#dintro'), pg=$('#macpg'), shell=$('.mac-shell',mac), W=1200;
   function fit(){ const sw=mac.clientWidth/W, sh=(shell.clientHeight||720)/740; const s=Math.min(sw,sh); pg.style.transform=`scale(${s})`; pg.style.left=Math.max(0,(mac.clientWidth-W*s)/2)+'px'; }
   new ResizeObserver(fit).observe(mac); new ResizeObserver(fit).observe(shell); fit();
-  function grow(){ if(rm) return; const narrow=cw()<=760;
-    if(narrow){ document.body.classList.remove('demo-on'); mac.style.width=''; mac.style.height=''; intro.style.opacity=''; intro.style.transform=''; return; }
-    const r=sec.getBoundingClientRect(); const vh=pin.clientHeight||innerHeight; const g=easeOut(clamp(-r.top/(vh*1.1),0,1));
+  const pin=$('.demo-pin',sec);
+  function grow(){ if(rm) return; const r=sec.getBoundingClientRect(); const vh=pin.clientHeight||innerHeight; const g=easeOut(clamp(-r.top/(vh*1.1),0,1));
     intro.style.opacity=String(1-Math.min(1,g*1.8)); intro.style.transform=`scale(${1-g*.06})`;
     document.body.classList.toggle('demo-on',g>.85);
-    const vw=cw(); mac.style.width=lerp(vw*.72,vw,g)+'px'; mac.style.height=lerp(vh*.62,vh,g)+'px'; mac.style.setProperty('--g',g.toFixed(3)); }
+    const vw=sec.clientWidth||innerWidth, narrow=vw<760; mac.style.width=lerp(narrow?vw*.92:vw*.72,vw,g)+'px'; mac.style.height=lerp(vh*.62,vh,g)+'px'; mac.style.setProperty('--g',g.toFixed(3)); }
   if(!rm){ addEventListener('scroll',grow,{passive:true}); addEventListener('resize',grow); grow(); }
-  new IntersectionObserver(es=>sec.classList.toggle('vis',es[0].isIntersecting),{threshold:.15}).observe($('#phone')||sec);
-  // šest oprav, jeden stav pro počítač i telefon
-  const keys=['s','h','c','t','i','f']; const state={}; keys.forEach(k=>state[k]=false);
-  function update(){ const n=keys.filter(k=>state[k]).length;
-    $$('.score').forEach(sc=>{ $$('.segs i',sc).forEach((i,j)=>i.classList.toggle('on',j<n)); $('b',sc).textContent=String(n); sc.classList.toggle('done',n===keys.length); });
-    if(n===keys.length){ $$('.dwin').forEach(d=>d.classList.add('on')); } }
-  function fix(k){ if(state[k]) return; state[k]=true; $$(`[data-fix="${k}"]`).forEach(el=>el.classList.add('ok')); update(); }
-  $$('[data-fix]').forEach(el=>{ el.addEventListener('click',e=>{ e.preventDefault(); fix(el.dataset.fix); }); el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); fix(el.dataset.fix); } }); });
+  const keys=['h','c','t','i','f','s']; const state={}; keys.forEach(k=>state[k]=false);
+  const bar=$('#dbar');
+  function update(){ const n=keys.filter(k=>state[k]).length; const w=8+n*15; bar.style.width=w+'%'; bar.style.background=n<2?'#E5484D':n<4?'#D99A00':'#1F9D5B'; if(n===keys.length){ $('#dwin').classList.add('on'); } }
+  $$('[data-fix]',mac).forEach(el=>el.addEventListener('click',e=>{ e.preventDefault(); const k=el.dataset.fix; if(state[k]) return; state[k]=true; el.classList.add('ok'); if(k==='s'){ el.querySelector('b').textContent='0,9 s'; } update(); }));
   update();
 }
-// služby: ožívá jedna položka, náhodně ale rovnoměrně; když najede uživatel, animace počká
-const cap=$('#cap3'), lis=$$('#cap3 li');
-if(cap&&lis.length&&!rm){ const cols=lis.map(li=>li.closest('.cap3>div')); let bag=[], last=-1, vis=false, paused=false, resumeT=null;
-  new IntersectionObserver(es=>{vis=es[0].isIntersecting;}).observe(cap);
-  function refill(){ // permutace všech položek, sousedé vždy z jiného sloupce
-    for(let tries=0;tries<50;tries++){ const p=lis.map((_,i)=>i).sort(()=>Math.random()-.5); let ok=true; for(let i=1;i<p.length;i++) if(cols[p[i]]===cols[p[i-1]]){ok=false;break;} if(ok&&(last<0||cols[p[0]]!==cols[last])){ bag=p; return; } } bag=lis.map((_,i)=>i); }
-  const tick=()=>{ if(vis&&!paused){ if(!bag.length) refill(); const i=bag.shift(); lis.forEach(l=>l.classList.remove('hl')); lis[i].classList.add('hl'); last=i; } setTimeout(tick,380+Math.random()*420); }; tick();
-  if(fine){ cap.addEventListener('pointerenter',()=>{ paused=true; clearTimeout(resumeT); lis.forEach(l=>l.classList.remove('hl')); }); cap.addEventListener('pointerleave',()=>{ clearTimeout(resumeT); resumeT=setTimeout(()=>{paused=false;},800); }); } }
-// postup: na mobilu se blok po klepnutí rozbalí
-$$('#road .blk').forEach(b=>{ b.addEventListener('click',e=>{ if(cw()>760) return; const open=b.classList.contains('open'); $$('#road .blk').forEach(x=>x.classList.remove('open')); if(!open) b.classList.add('open'); }); b.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); b.click(); } }); });
+// služby: náhodně ožívá jedna položka, vždy v jiném sloupci
+const lis=$$('.cap3 li');
+if(lis.length&&!rm){ let last=-1, vis=false; const cols=lis.map(li=>li.closest('.cap3>div'));
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;}).observe($('.cap3'));
+  const tick=()=>{ if(vis){ let i; do{ i=Math.floor(Math.random()*lis.length);}while(cols[i]===cols[last]); lis.forEach(l=>l.classList.remove('hl')); lis[i].classList.add('hl'); last=i; } setTimeout(tick,380+Math.random()*420); }; tick(); }
 // kontakt: slovo se maže a píše po znacích
 const rotw=$('#rotw');
 if(rotw){ const wordsR=['web','značka','aplikace','projekt']; let i=0;
   if(rm){ rotw.textContent=wordsR[0]; } else {
     const step=()=>{ const cur=rotw.textContent; if(cur.length>0){ rotw.textContent=cur.slice(0,-1); setTimeout(step,40); return; } i=(i+1)%wordsR.length; const nx=wordsR[i]; let c=0; const type=()=>{ c++; rotw.textContent=nx.slice(0,c); if(c<nx.length) setTimeout(type,64); else setTimeout(step,2000); }; setTimeout(type,220); };
     setTimeout(step,2000); } }
-// tým: 3, 6, 4, 8, 5, 2, 7, 3 lidí, lehce nepravidelně
+// tým: 3, 6, 4, 7, 5, 3 lidí, lehce nepravidelně
 const avs=$('#avs');
 if(avs){ const imgs=$$('img',avs); const step=38;
   function lay(n){ imgs.forEach((im,i)=>{ const on=i<n; im.style.left=(Math.min(i,n-1)*step)+'px'; im.style.opacity=on?1:0; im.style.transform=on?'':'scale(.6)'; im.style.zIndex=10-i; }); }
   const seq=[3,6,4,8,5,2,7,3], wait=[900,1400,800,1600,1000,700,1300,900]; let k=0; lay(8);
   if(!rm){ const next=()=>{ lay(seq[k]); const w=wait[k]+Math.round((Math.random()-.5)*300); k=(k+1)%seq.length; setTimeout(next,w); }; setTimeout(next,1800); } }
-// poptávka
+// poptávka form
 const form=$('#form');
 if(form){
   let size=null; $$('#size button').forEach(b=>b.addEventListener('click',()=>{ size=b.dataset.v; $$('#size button').forEach(x=>x.classList.toggle('on',x===b)); }));
