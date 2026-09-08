@@ -1,0 +1,306 @@
+/* ══════════════════════════════════════════════════════════════
+   Webkit.Studio — styly homepage nad rámec Webflow tříd
+   ══════════════════════════════════════════════════════════════
+   Jde do samostatného HTML Embedu na začátku main-wrapper, aby
+   se dalo měnit bez přeposílání markupu interaktivní ukázky.
+
+   Co sem patří: všechno, co potřebuje potomkový selektor, klíčové
+   snímky animace nebo vlastní breakpoint. Webflow tohle v třídách
+   neumí.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ---------- proměnné, ať se to čte stejně jako v prototypu ---------- */
+#obsah, .footer_component{
+  --bg:#ECEFF3;--card:#F7F8FA;--ink:#101321;--ink2:#3A3F52;--mute:#646A7E;
+  --line:#CDD2DC;--line2:#AEB5C4;--blue:#1D2BE8;--blue2:#1523B8;
+  --blue-soft:#D8DCFB;--lilac:#8A96FF;--dark:#101321;--dark-line:#2C3350;
+  --green:#17824A;--red:#E0483F;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --hdr:4rem;
+}
+
+/* ---------- sekce Tým je skrytá ---------- */
+#tym{display:none!important}
+
+/* ══════════ 1. SVISLÝ RYTMUS ══════════
+   Prototyp má hero přes celou výšku obrazovky a sekce na
+   clamp(72px, 9cqi, 128px). Webflow build měl 7rem, což je o
+   třetinu míň, a hero působilo zmáčknutě. */
+
+#hero{
+  min-height:calc(100svh - var(--hdr));
+  display:flex;
+  align-items:center;
+  padding-top:clamp(3rem,8vh,5.5rem);
+  padding-bottom:clamp(3rem,7vh,4.5rem);
+  isolation:isolate;
+}
+#hero > .padding-global{width:100%}
+#hero .padding-section-large{padding-top:0;padding-bottom:0}
+#hero .hero_row{margin-top:clamp(1.5rem,5vh,3.5rem)}
+
+/* ostatní sekce dostanou vzduch podle prototypu */
+#brzdi .padding-section-medium,
+#brzdi .padding-section-large,
+#sluzby .padding-section-medium,
+#sluzby .padding-section-large,
+#postup .padding-section-medium,
+#postup .padding-section-large,
+#kontakt .padding-section-large{
+  padding-top:clamp(4.5rem,9vw,8rem);
+  padding-bottom:clamp(4.5rem,9vw,8rem);
+}
+
+@media screen and (max-width:767px){
+  #hero{min-height:0;padding-top:clamp(2.5rem,7vh,3.5rem);padding-bottom:2.5rem}
+  #brzdi .padding-section-medium,#brzdi .padding-section-large,
+  #sluzby .padding-section-medium,#sluzby .padding-section-large,
+  #postup .padding-section-medium,#postup .padding-section-large,
+  #kontakt .padding-section-large{padding-top:3.5rem;padding-bottom:3.5rem}
+}
+
+/* ══════════ 2. ODHALOVÁNÍ PŘI SCROLLU ══════════
+   Stejná mechanika jako prototyp: prvek startuje níž a průhledný,
+   skript mu přidá .is-in. Bez skriptu je vidět všechno, takže se
+   nemůže stát, že by obsah zůstal schovaný. */
+
+.wk-rv{opacity:1;transform:none}
+.wk-js .wk-rv{
+  opacity:0;transform:translateY(22px);
+  transition:opacity .8s var(--ease),transform .9s var(--ease);
+}
+.wk-js .wk-rv.is-in{opacity:1;transform:none}
+.wk-js .wk-rv.wk-d1{transition-delay:.08s}
+.wk-js .wk-rv.wk-d2{transition-delay:.16s}
+.wk-js .wk-rv.wk-d3{transition-delay:.24s}
+
+@media (prefers-reduced-motion:reduce){
+  .wk-js .wk-rv{opacity:1;transform:none;transition:none}
+}
+
+/* ══════════ 3. KARTY V SEKCI BRZDÍ ══════════
+   Kresby v kartách jsou v prototypu animované a rozjedou se při
+   najetí myší. Na dotyku se rozjedou, jakmile je karta vidět. */
+
+#brzdi .problem_card{
+  transition:transform .35s var(--ease),box-shadow .35s;
+}
+#brzdi .problem_card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 30px 60px -40px rgba(16,19,33,.35);
+}
+
+#brzdi .problem_pill,#brzdi .problem_pill::before,
+#brzdi .problem_avatar,
+#brzdi .problem_curve-rise,#brzdi .problem_curve-fall,#brzdi .problem_curve-label{
+  animation-play-state:paused;
+}
+#brzdi .problem_card:hover .problem_pill,
+#brzdi .problem_card:hover .problem_pill::before,
+#brzdi .problem_card:hover .problem_avatar,
+#brzdi .problem_card:hover .problem_curve-rise,
+#brzdi .problem_card:hover .problem_curve-fall,
+#brzdi .problem_card:hover .problem_curve-label{animation-play-state:running}
+
+/* na dotyku se nedá najet myší, tak se to rozjede, jakmile je karta vidět */
+@media (hover:none){
+  #brzdi .problem_card.is-in .problem_pill,
+  #brzdi .problem_card.is-in .problem_pill::before,
+  #brzdi .problem_card.is-in .problem_avatar,
+  #brzdi .problem_card.is-in .problem_curve-rise,
+  #brzdi .problem_card.is-in .problem_curve-fall,
+  #brzdi .problem_card.is-in .problem_curve-label{animation-play-state:running}
+}
+
+/* štítky se rozjedou doprava a zpátky, tečka se u toho rozsvítí */
+#brzdi .problem_pill{animation:wk-pill 3.2s var(--ease) infinite}
+#brzdi .problem_pill.is-p2{animation-delay:.25s}
+#brzdi .problem_pill.is-p3{animation-delay:.5s}
+#brzdi .problem_pill.is-p4{animation-delay:.75s}
+/* Webflow verze štítku nemá tečku jako prvek, doděláme ji pseudoprvkem,
+   ať nemusím sahat do struktury stránky */
+#brzdi .problem_pill{display:inline-flex;align-items:center;gap:.5rem}
+#brzdi .problem_pill::before{
+  content:"";width:.75rem;height:.75rem;border-radius:50%;
+  background-color:#AEB5C4;flex:0 0 auto;
+  animation:wk-dot 3.2s ease-in-out infinite;animation-play-state:inherit;
+}
+#brzdi .problem_pill.is-p1::before,#brzdi .problem_pill.is-p2::before{background-color:#1D2BE8}
+#brzdi .problem_pill.is-p2::before{animation-delay:.25s}
+#brzdi .problem_pill.is-p3::before{animation-delay:.5s}
+#brzdi .problem_pill.is-p4::before{animation-delay:.75s}
+@keyframes wk-pill{0%,100%{transform:translateX(0)}45%{transform:translateX(14px)}}
+@keyframes wk-dot{0%,20%{background-color:#AEB5C4}45%,70%{background-color:#1D2BE8}100%{background-color:#AEB5C4}}
+
+/* chybějící členové týmu probliknou, jako by tam měli být */
+#brzdi .problem_avatar.is-a3,
+#brzdi .problem_avatar.is-a4{animation:wk-gone 2.8s ease-in-out infinite}
+#brzdi .problem_avatar.is-a4{animation-delay:.7s}
+@keyframes wk-gone{
+  0%,100%{opacity:.4;transform:translate(0,-50%)}
+  40%,60%{opacity:1;border-style:solid;transform:translate(0,calc(-50% - 4px))}
+}
+
+/* Křivka je ve Webflow poskládaná z divů, ne z SVG, takže stroke-dasharray
+   nepomůže. Kreslení nahradíme odhalováním zleva přes clip-path. */
+#brzdi .problem_curve-rise{animation:wk-draw 3.2s var(--ease) infinite}
+#brzdi .problem_curve-fall{animation:wk-fade 3.2s var(--ease) infinite}
+#brzdi .problem_curve-label{animation:wk-label 3.2s var(--ease) infinite}
+@keyframes wk-draw{
+  0%{clip-path:inset(0 100% 0 0)}
+  40%,100%{clip-path:inset(0 0 0 0)}
+}
+@keyframes wk-fade{
+  0%,38%{opacity:0;transform:translateY(-6px)}
+  62%,100%{opacity:1;transform:none}
+}
+@keyframes wk-label{
+  0%,30%{opacity:0}
+  45%,100%{opacity:1}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #brzdi .problem_pill,#brzdi .problem_pill::before,#brzdi .problem_avatar,
+  #brzdi .problem_curve-rise,#brzdi .problem_curve-fall,
+  #brzdi .problem_curve-label{animation:none!important;clip-path:none!important;opacity:1!important}
+  #brzdi .problem_card:hover{transform:none}
+}
+
+/* ══════════ 4. INTERAKTIVNÍ UKÁZKA ══════════
+   Přebíjí styly z embedu ukázky. Vyšší specificita (#demo.section_demo)
+   je schválně, aby to platilo bez ohledu na pořadí embedů. */
+
+/* Mock se nesmí nafouknout tak, že přeteče. Skript počítá měřítko
+   z dostupné výšky bez spodní lišty, tady jen doladíme umístění. */
+#demo.section_demo .mac-shell{display:block}
+#demo.section_demo .mac-pg{transform-origin:top left}
+
+/* Štítek u nadpisu mířil doprava a na širokém monitoru utíkal z plochy.
+   Otočíme ho doleva, tam je vždycky místo. */
+#demo.section_demo .dhero .dh .tag{left:0;right:auto;max-width:36ch}
+#demo.section_demo .dcta .tag{max-width:34ch}
+#demo.section_demo .dimg .tag{right:12px;left:auto;max-width:30ch}
+
+/* ---------- ukazatel oprav ----------
+   Skript ho vytáhne z mocku ven do .demo-pin, ať ho neořízne overflow
+   a ať je vidět pořád. Nahoře uprostřed, kde nic nepřekáží. */
+#demo.section_demo .demo-pin > .score{
+  position:absolute;
+  left:50%;
+  top:clamp(1rem,3vh,2.25rem);
+  right:auto;
+  bottom:auto;
+  transform:translateX(-50%);
+  z-index:20;
+  gap:.875rem;
+  padding:.625rem 1.125rem .625rem .875rem;
+  font-size:.9375rem;
+  box-shadow:0 22px 50px -20px rgba(16,19,33,.55);
+  transition:background-color .45s var(--ease),box-shadow .45s var(--ease);
+}
+#demo.section_demo .demo-pin > .score .segs{gap:.3rem}
+#demo.section_demo .demo-pin > .score .segs i{
+  width:1.375rem;height:.5rem;border-radius:.25rem;
+  transition:background-color .35s var(--ease),transform .35s var(--ease);
+}
+/* každý opravený segment cvakne, ať je z toho odměna */
+#demo.section_demo .demo-pin > .score .segs i.on{
+  background-color:#8A96FF;
+  animation:wk-seg .45s var(--ease);
+}
+@keyframes wk-seg{
+  0%{transform:scaleY(.4);opacity:.4}
+  55%{transform:scaleY(1.5)}
+  100%{transform:scaleY(1);opacity:1}
+}
+/* hotovo: celý ukazatel zezelená a nadskočí */
+#demo.section_demo .demo-pin > .score.done{
+  background-color:#17824A;
+  box-shadow:0 22px 60px -18px rgba(23,130,74,.65);
+  animation:wk-done .6s var(--ease);
+}
+#demo.section_demo .demo-pin > .score.done .segs i.on{background-color:#FFFFFF}
+@keyframes wk-done{
+  0%{transform:translateX(-50%) scale(1)}
+  40%{transform:translateX(-50%) scale(1.08)}
+  100%{transform:translateX(-50%) scale(1)}
+}
+
+@media (max-width:760px){
+  /* na mobilu zůstává dole, tam nepřekáží a je pod palcem */
+  #demo.section_demo .demo-pin > .score{
+    top:auto;bottom:1rem;position:fixed;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  #demo.section_demo.vis .demo-pin > .score{opacity:1;pointer-events:auto}
+  @keyframes wk-done{
+    0%{transform:translateX(-50%) scale(1)}
+    40%{transform:translateX(-50%) scale(1.06)}
+    100%{transform:translateX(-50%) scale(1)}
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  #demo.section_demo .demo-pin > .score,
+  #demo.section_demo .demo-pin > .score .segs i{animation:none!important}
+}
+
+/* Ukazatel je jen jeden, ten v .demo-pin. Kopie uvnitř telefonu by byla duplicita. */
+#demo.section_demo .phone .score{display:none!important}
+
+/* ══════════ 5. KONTAKT ══════════
+   Nadpis vlevo, formulář vpravo. Nadpis má pevné zalomení na tři řádky,
+   na mobilu se zalomení ruší, protože se dlouhý řádek nevejde. */
+
+#kontakt .contact_layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:clamp(2rem,5vw,4.5rem);
+  align-items:start;
+}
+#kontakt .contact_heading{grid-column:1;grid-row:1;max-width:none}
+#kontakt .contact_actions{grid-column:1;grid-row:2;margin-top:1.75rem}
+#kontakt .contact_layout > .w-form{grid-column:2;grid-row:1 / span 2}
+#kontakt .contact_rot{white-space:nowrap}
+
+#kontakt .w-form form{display:grid;gap:.875rem}
+#kontakt .w-form label{
+  margin-bottom:.3rem;
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.09em;
+  text-transform:uppercase;color:rgba(241,242,246,.62);
+}
+#kontakt .w-form input,#kontakt .w-form textarea{
+  width:100%;padding:.875rem 1rem;
+  border:1px solid #2C3350;border-radius:.75rem;
+  background-color:rgba(255,255,255,.04);color:#F1F2F6;
+  font-family:inherit;font-size:1rem;
+  transition:border-color .15s,background-color .15s;
+}
+#kontakt .w-form textarea{min-height:7rem;resize:vertical}
+#kontakt .w-form input:focus,#kontakt .w-form textarea:focus{
+  outline:none;border-color:#8A96FF;background-color:rgba(255,255,255,.07);
+}
+#kontakt .w-form input[type=submit]{
+  margin-top:.375rem;min-height:2.75rem;
+  background-color:#FFFFFF;border-color:#FFFFFF;color:#101321;
+  font-weight:600;cursor:pointer;
+}
+#kontakt .w-form input[type=submit]:hover{background-color:#F1F2F6;border-color:#F1F2F6}
+#kontakt .w-form-done{background-color:rgba(23,130,74,.18);border:1px solid #17824A}
+#kontakt .w-form-fail{background-color:rgba(224,72,63,.16);border:1px solid #E0483F}
+#kontakt .w-form-done,#kontakt .w-form-fail{
+  border-radius:.75rem;padding:1rem 1.125rem;color:#F1F2F6;font-size:.9375rem;
+}
+
+@media screen and (max-width:991px){
+  #kontakt .contact_layout{grid-template-columns:minmax(0,1fr)}
+  #kontakt .contact_heading,#kontakt .contact_actions,
+  #kontakt .contact_layout > .w-form{grid-column:1;grid-row:auto}
+  #kontakt .contact_actions{margin-top:1.25rem}
+}
+@media screen and (max-width:767px){
+  #kontakt .contact_heading br{display:none}
+  #kontakt .contact_rot{white-space:normal}
+}

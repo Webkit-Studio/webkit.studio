@@ -1,0 +1,10 @@
+(function(){var K='wk-consent';window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',functionality_storage:'granted',security_storage:'granted',wait_for_update:500});
+gtag('js',new Date());
+var b=document.createElement('script');b.defer=true;b.src='https://static.cloudflareinsights.com/beacon.min.js';b.setAttribute('data-cf-beacon','{"token":"63f4e42712ab4802adc333753f2078a3"}');document.head.appendChild(b);
+window.wkLoadAnalytics=function(){if(window.__wkA)return;window.__wkA=1;
+var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id=G-ZREE72G532';document.head.appendChild(g);
+gtag('config','G-ZREE72G532',{anonymize_ip:true});
+(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","yf3smugrpy")};
+window.wkGrant=function(){gtag('consent','update',{ad_storage:'granted',ad_user_data:'granted',ad_personalization:'granted',analytics_storage:'granted'});window.wkLoadAnalytics()};
+try{if(localStorage.getItem(K)==='all')window.wkGrant()}catch(e){}})();
