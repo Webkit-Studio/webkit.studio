@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Webkit.Studio — brand sheet</title>
+<meta name="description" content="Jediný zdroj pravdy pro vizuální systém Webkit.Studio. Tokeny, typografie, komponenty a pravidla pro dokumenty.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+
+<!--
+  ══════════════════════════════════════════════════════════════════
+  WEBKIT.STUDIO — BRAND SHEET
+  ══════════════════════════════════════════════════════════════════
+
+  Tenhle soubor je zdroj pravdy pro celý vizuální systém.
+  Je zároveň dokumentace pro člověka a zadání pro nástroj.
+
+  Kde se to používá:
+  - web webkit.studio (Webflow, proměnné mají stejná jména)
+  - klientská zóna (site/ v repu)
+  - nabídky, faktury, prezentace, brief
+
+  Když měníš barvu nebo velikost, měň ji tady a pak to promítni dál.
+  Nikdy naopak.
+
+  Strojově čitelná verze tokenů je v <script type="application/json"
+  id="tokens"> na konci souboru.
+-->
+
+<style>
+/* ═══════════ TOKENY ═══════════
+   Jména odpovídají proměnným ve Webflow, aby šlo obojí porovnat. */
+:root{
+  /* Barvy — základ */
+  --white:#FFFFFF;
+  --neutral-lightest:#ECEFF3;
+  --neutral-lighter:#E2E6EC;
+  --card:#F7F8FA;
+  --neutral-light:#CDD2DC;
+  --line-strong:#AEB5C4;
+  --neutral:#646A7E;
+  --neutral-dark:#3A3F52;
+  --neutral-darker:#181C2E;
+  --neutral-darkest:#101321;
+  --text-inverse:#F1F2F6;
+  --dark-line:#2C3350;
+
+  /* Barvy — značka */
+  --accent:#1D2BE8;
+  --accent-dark:#1523B8;
+  --accent-soft:#D8DCFB;
+  --lilac:#8A96FF;
+
+  /* Barvy — významové */
+  --success:#17824A;
+  --danger:#E0483F;
+
+  /* Písma */
+  --font-heading:"Bricolage Grotesque",Georgia,serif;
+  --font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+
+  /* Rádiusy */
+  --radius-small:8px;
+  --radius-medium:14px;
+  --radius-large:22px;
+  --radius-button:12px;
+
+  /* Odsazení sekcí */
+  --section-small:3rem;
+  --section-medium:5rem;
+  --section-large:7rem;
+
+  /* Stín tlačítka */
+  --shadow-button:0 10px 26px -12px rgba(29,43,232,.55);
+  --shadow-card:0 30px 60px -30px rgba(16,19,33,.45), 0 0 0 1px rgba(16,19,33,.06);
+
+  /* Odvozené role — používej tyhle, ne přímo barvy výše */
+  --bg:var(--neutral-lightest);
+  --surface:var(--white);
+  --ink:var(--neutral-darkest);
+  --ink-2:var(--neutral-dark);
+  --mute:var(--neutral);
+  --line:var(--neutral-light);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font-body);font-size:17px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:72rem;margin:0 auto;padding:0 clamp(1.25rem,4vw,3rem)}
+
+/* ═══════════ TYPOGRAFIE ═══════════
+   Nadpisy jedou na plynulém clamp(), takže mezi mobilem a desktopem
+   není žádný skok. Optická velikost (opsz) se mění s velikostí písma:
+   velký nadpis chce užší, jemnější kresbu. */
+h1,h2,h3,h4,h5,h6{font-family:var(--font-heading);margin:0;letter-spacing:-.03em;text-wrap:balance}
+h1{font-size:clamp(3.25rem,9.4vw,11rem);line-height:.92;font-weight:300;letter-spacing:-.035em;font-variation-settings:"opsz" 96}
+h2{font-size:clamp(1.875rem,3.8vw,3.25rem);line-height:1.06;font-weight:400;font-variation-settings:"opsz" 72}
+h3{font-size:clamp(1.75rem,2.6vw,2.25rem);line-height:1.08;font-weight:500;letter-spacing:-.025em;font-variation-settings:"opsz" 48}
+h4{font-size:clamp(1.375rem,2.2vw,1.875rem);line-height:1.15;font-weight:500;font-variation-settings:"opsz" 32}
+h5{font-size:clamp(1.1875rem,1.6vw,1.375rem);line-height:1.25;font-weight:600;font-variation-settings:"opsz" 24}
+h6{font-size:1.125rem;line-height:1.35;font-weight:600;font-variation-settings:"opsz" 18}
+p{margin:0}
+.text-tiny{font-size:.8125rem}
+.text-small{font-size:.96875rem}
+.text-regular{font-size:1.0625rem}
+.text-medium{font-size:1.1875rem}
+.text-large{font-size:clamp(1.0625rem,1.35vw,1.3125rem)}
+.mono{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.09em;text-transform:uppercase;color:var(--mute)}
+
+/* ═══════════ STRÁNKA BRAND SHEETU ═══════════ */
+header.top{background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .wrap{padding-top:clamp(2.5rem,6vw,4.5rem);padding-bottom:clamp(2rem,4vw,3rem)}
+header.top .lede{max-width:48ch;margin-top:1.25rem;color:var(--ink-2);font-size:1.1875rem}
+.brandline{display:flex;align-items:center;gap:.7rem;margin-bottom:1.5rem}
+.mark{width:2rem;height:2rem;flex:0 0 auto}
+.brandline b{font-family:var(--font-heading);font-weight:600;font-size:1.0625rem;letter-spacing:-.01em;color:var(--accent);font-variation-settings:"opsz" 18}
+
+section.blk{padding:clamp(3rem,6vw,5rem) 0;border-bottom:1px solid var(--line)}
+section.blk > .wrap > header{margin-bottom:2rem;max-width:60ch}
+section.blk h2{margin-bottom:.6rem}
+section.blk header p{color:var(--ink-2)}
+
+.grid{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius-small);overflow:hidden}
+.cols-4{grid-template-columns:repeat(auto-fit,minmax(11rem,1fr))}
+.cols-3{grid-template-columns:repeat(auto-fit,minmax(15rem,1fr))}
+.cell{background:var(--surface);padding:1rem}
+
+/* barevné vzorky */
+.sw{height:4.5rem;border-radius:var(--radius-small);border:1px solid rgba(16,19,33,.08)}
+.sw-name{margin-top:.7rem;font-weight:600;font-size:.9375rem}
+.sw-hex{font-family:var(--font-mono);font-size:.75rem;color:var(--mute);text-transform:uppercase}
+.sw-use{font-size:.8125rem;color:var(--mute);margin-top:.35rem;line-height:1.4}
+
+/* schémata */
+.scheme{border-radius:var(--radius-medium);padding:1.5rem;border:1px solid var(--line);display:flex;flex-direction:column;gap:.9rem;min-height:12rem}
+.scheme .nm{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.09em;text-transform:uppercase;opacity:.65}
+.scheme .hd{font-family:var(--font-heading);font-size:1.375rem;font-weight:500;font-variation-settings:"opsz" 24;line-height:1.15}
+.scheme .bd{font-size:.9375rem;opacity:.8}
+.scheme .btn{align-self:flex-start;margin-top:auto}
+.s1{background:var(--neutral-lightest);color:var(--neutral-darkest);border-color:var(--neutral-light)}
+.s2{background:var(--white);color:var(--neutral-darkest);border-color:var(--neutral-light)}
+.s3{background:var(--neutral-darkest);color:var(--text-inverse);border-color:var(--dark-line)}
+.s4{background:var(--accent);color:var(--white);border-color:var(--accent-dark)}
+.s5{background:var(--lilac);color:var(--neutral-darkest);border-color:var(--lilac)}
+
+/* tlačítka */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.625rem;
+  min-height:2.75rem;padding:1.0625rem 1.625rem;border:1px solid var(--accent);
+  border-radius:var(--radius-button);background:var(--accent);color:var(--white);
+  font-family:var(--font-body);font-size:.96875rem;font-weight:600;line-height:1.2;
+  text-decoration:none;cursor:pointer;box-shadow:var(--shadow-button);
+  transition:background-color .12s cubic-bezier(.2,0,0,1),border-color .12s cubic-bezier(.2,0,0,1),color .12s cubic-bezier(.2,0,0,1)}
+.btn:hover{background:var(--accent-dark);border-color:var(--accent-dark);color:var(--white)}
+.btn.secondary{background:transparent;border-color:var(--line-strong);color:var(--ink);box-shadow:none}
+.btn.secondary:hover{border-color:var(--ink);background:transparent;color:var(--ink)}
+.btn.alt{background:var(--white);border-color:var(--white);color:var(--ink);box-shadow:none}
+.btn.alt:hover{background:var(--text-inverse);border-color:var(--text-inverse);color:var(--ink)}
+.btn.small{min-height:2.25rem;padding:.6rem 1rem;font-size:.875rem}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.btnrow{display:flex;flex-wrap:wrap;gap:.75rem;align-items:center}
+
+/* specimen */
+.spec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-medium);padding:clamp(1.25rem,3vw,2rem);overflow:hidden}
+.spec + .spec{margin-top:1rem}
+.spec .lbl{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:.6rem;border-bottom:1px solid var(--line);padding-bottom:.5rem}
+.spec .lbl code{font-family:var(--font-mono);font-size:.6875rem;color:var(--mute)}
+
+/* tabulky */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius-small);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9375rem}
+th,td{text-align:left;padding:.65rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:var(--font-mono);font-size:.6875rem;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);font-weight:400;background:var(--card);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+code{font-family:var(--font-mono);font-size:.875em;background:var(--card);padding:.1em .35em;border-radius:4px}
+
+/* pravidla */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1.25rem}
+.rule{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:0 var(--radius-small) var(--radius-small) 0;padding:1.1rem 1.25rem}
+.rule.no{border-left-color:var(--danger)}
+.rule h6{margin-bottom:.4rem}
+.rule p{font-size:.9375rem;color:var(--ink-2)}
+
+/* ukázka faktury */
+.doc{background:var(--white);border:1px solid var(--line);border-radius:var(--radius-small);padding:clamp(1.5rem,4vw,2.5rem);color:var(--neutral-darkest);max-width:46rem}
+.doc-head{display:flex;justify-content:space-between;gap:2rem;flex-wrap:wrap;align-items:flex-start;padding-bottom:1.25rem;border-bottom:2px solid var(--neutral-darkest)}
+.doc-head .t{font-family:var(--font-heading);font-size:1.75rem;font-weight:500;font-variation-settings:"opsz" 32;line-height:1.1}
+.doc-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:1.25rem;margin:1.25rem 0}
+.doc-meta .k{font-family:var(--font-mono);font-size:.625rem;letter-spacing:.1em;text-transform:uppercase;color:var(--neutral)}
+.doc-meta .v{font-size:.9375rem;margin-top:.2rem}
+.doc-total{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-top:1rem;padding-top:.9rem;border-top:2px solid var(--neutral-darkest);font-family:var(--font-heading);font-size:1.375rem;font-weight:600;font-variation-settings:"opsz" 24}
+
+footer.end{padding:3rem 0 5rem;color:var(--mute);font-size:.875rem}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{
+  body{background:var(--white);font-size:10.5pt}
+  section.blk{break-inside:avoid;padding:1.5rem 0}
+  .btn{box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brandline">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path fill="#1D2BE8" d="M4 4h9v9H4zM19 4h9v9h-9zM4 19h9v9H4zM19 19h9v9h-9z" opacity=".2"/><path fill="#1D2BE8" d="M4 4h9v24H4zM19 4l9 24h-9z"/></svg>
+      <b>Webkit.Studio</b>
+    </div>
+    <h1>Brand sheet</h1>
+    <p class="lede">Jediný zdroj pravdy pro vizuální systém. Barvy, písma, komponenty a pravidla pro dokumenty. Když se něco mění, mění se to tady jako první.</p>
+  </div>
+</header>
+
+<!-- ═══════════ BARVY ═══════════ -->
+<section class="blk">
+  <div class="wrap">
+    <header>
+      <span class="mono">01 — Barvy</span>
+      <h2>Osmnáct barev, z toho čtyři značkové</h2>
+      <p>Neutrální odstíny mají modrý nádech, aby ladily s akcentem. Čistě šedá se v systému nevyskytuje.</p>
+    </header>
+
+    <h5 style="margin-bottom:.9rem">Značka</h5>
+    <div class="grid cols-4">
+      <div class="cell"><div class="sw" style="background:#1D2BE8"></div><div class="sw-name">Accent</div><div class="sw-hex">#1D2BE8</div><div class="sw-use">Tlačítka, odkazy, aktivní stavy. Jediná sytá barva na stránce.</div></div>
+      <div class="cell"><div class="sw" style="background:#1523B8"></div><div class="sw-name">Accent Dark</div><div class="sw-hex">#1523B8</div><div class="sw-use">Stav po najetí na tlačítko.</div></div>
+      <div class="cell"><div class="sw" style="background:#D8DCFB"></div><div class="sw-name">Accent Soft</div><div class="sw-hex">#D8DCFB</div><div class="sw-use">Podklad pod zdůrazněný blok, první krok v časové ose.</div></div>
+      <div class="cell"><div class="sw" style="background:#8A96FF"></div><div class="sw-name">Lilac</div><div class="sw-hex">#8A96FF</div><div class="sw-use">Akcent na tmavém podkladu. Na světlém nemá dost kontrastu.</div></div>
+    </div>
+
+    <h5 style="margin:2rem 0 .9rem">Neutrální</h5>
+    <div class="grid cols-4">
+      <div class="cell"><div class="sw" style="background:#FFFFFF"></div><div class="sw-name">White</div><div class="sw-hex">#FFFFFF</div><div class="sw-use">Karty a povrchy nad podkladem.</div></div>
+      <div class="cell"><div class="sw" style="background:#ECEFF3"></div><div class="sw-name">Neutral Lightest</div><div class="sw-hex">#ECEFF3</div><div class="sw-use">Základní podklad webu.</div></div>
+      <div class="cell"><div class="sw" style="background:#E2E6EC"></div><div class="sw-name">Neutral Lighter</div><div class="sw-hex">#E2E6EC</div><div class="sw-use">Střídavé pruhy sekcí.</div></div>
+      <div class="cell"><div class="sw" style="background:#F7F8FA"></div><div class="sw-name">Card</div><div class="sw-hex">#F7F8FA</div><div class="sw-use">Vnitřek karet, hlavičky tabulek.</div></div>
+      <div class="cell"><div class="sw" style="background:#CDD2DC"></div><div class="sw-name">Neutral Light</div><div class="sw-hex">#CDD2DC</div><div class="sw-use">Linky a okraje.</div></div>
+      <div class="cell"><div class="sw" style="background:#AEB5C4"></div><div class="sw-name">Line Strong</div><div class="sw-hex">#AEB5C4</div><div class="sw-use">Okraj sekundárního tlačítka.</div></div>
+      <div class="cell"><div class="sw" style="background:#646A7E"></div><div class="sw-name">Neutral</div><div class="sw-hex">#646A7E</div><div class="sw-use">Popisky, vedlejší text.</div></div>
+      <div class="cell"><div class="sw" style="background:#3A3F52"></div><div class="sw-name">Neutral Dark</div><div class="sw-hex">#3A3F52</div><div class="sw-use">Běžný text odstavců.</div></div>
+      <div class="cell"><div class="sw" style="background:#181C2E"></div><div class="sw-name">Neutral Darker</div><div class="sw-hex">#181C2E</div><div class="sw-use">Povrch na tmavém pozadí.</div></div>
+      <div class="cell"><div class="sw" style="background:#101321"></div><div class="sw-name">Neutral Darkest</div><div class="sw-hex">#101321</div><div class="sw-use">Nadpisy, tmavé sekce.</div></div>
+      <div class="cell"><div class="sw" style="background:#2C3350"></div><div class="sw-name">Dark Line</div><div class="sw-hex">#2C3350</div><div class="sw-use">Linky na tmavém podkladu.</div></div>
+      <div class="cell"><div class="sw" style="background:#F1F2F6"></div><div class="sw-name">Text Inverse</div><div class="sw-hex">#F1F2F6</div><div class="sw-use">Text na tmavém podkladu. Ne čistá bílá.</div></div>
+    </div>
+
+    <h5 style="margin:2rem 0 .9rem">Významové</h5>
+    <div class="grid cols-4">
+      <div class="cell"><div class="sw" style="background:#17824A"></div><div class="sw-name">Success</div><div class="sw-hex">#17824A</div><div class="sw-use">Hotovo, spuštěno, potvrzeno.</div></div>
+      <div class="cell"><div class="sw" style="background:#E0483F"></div><div class="sw-name">Danger</div><div class="sw-hex">#E0483F</div><div class="sw-use">Chyba, problém, po splatnosti.</div></div>
+    </div>
+
+    <div class="rules" style="margin-top:2rem">
+      <div class="rule"><h6>Kontrast je pravidlo, ne doporučení</h6><p>Text 4,5 : 1, velký text a prvky 3 : 1. Když barva neprojde, změň barvu, ne velikost.</p></div>
+      <div class="rule no"><h6>Nepoužívej akcent jako podklad textu</h6><p>Modrá #1D2BE8 nese bílý text. Nikdy na ní nesmí být tmavý text ani lila.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SCHÉMATA ═══════════ -->
+<section class="blk">
+  <div class="wrap">
+    <header>
+      <span class="mono">02 — Barevná schémata</span>
+      <h2>Pět povrchů, mezi kterými se přepíná</h2>
+      <p>Sekce nemá vlastní barvy. Dostane schéma a všechno uvnitř se přebarví samo. Ve Webflow to dělá třída <code>color-scheme-1</code> až <code>color-scheme-5</code>.</p>
+    </header>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem">
+      <div class="scheme s1"><span class="nm">Schéma 1 — základ</span><span class="hd">Šedomodrá</span><span class="bd">Výchozí podklad webu. Většina sekcí.</span><a class="btn small" href="#">Tlačítko</a></div>
+      <div class="scheme s2"><span class="nm">Schéma 2 — bílá</span><span class="hd">Bílá</span><span class="bd">Sekce, které mají působit vzdušně.</span><a class="btn small" href="#">Tlačítko</a></div>
+      <div class="scheme s3"><span class="nm">Schéma 3 — tmavá</span><span class="hd">Tmavá</span><span class="bd">Projekty, kontakt, patička.</span><a class="btn small alt" href="#">Tlačítko</a></div>
+      <div class="scheme s4"><span class="nm">Schéma 4 — modrá</span><span class="hd">Modrá</span><span class="bd">Jeden pruh s výzvou. Víc než jeden na stránku ne.</span><a class="btn small alt" href="#">Tlačítko</a></div>
+      <div class="scheme s5"><span class="nm">Schéma 5 — lila</span><span class="hd">Lila</span><span class="bd">Zvýrazněný blok. Používej střídmě.</span><a class="btn small" href="#" style="background:#101321;border-color:#101321;box-shadow:none">Tlačítko</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TYPOGRAFIE ═══════════ -->
+<section class="blk">
+  <div class="wrap">
+    <header>
+      <span class="mono">03 — Typografie</span>
+      <h2>Tři písma, každé má jednu práci</h2>
+      <p>Nadpisy Bricolage Grotesque, text Instrument Sans, čísla a popisky IBM Plex Mono. Nadpisová a textová jsou variabilní, takže se váha i optická velikost mění plynule.</p>
+    </header>
+
+    <div class="tw" style="margin-bottom:2rem"><table>
+      <thead><tr><th>Role</th><th>Písmo</th><th>Řezy</th><th>Kde</th></tr></thead>
+      <tbody>
+        <tr><td class="n">Heading</td><td>Bricolage Grotesque</td><td class="n">200–800, opsz 12–96</td><td>Nadpisy, čísla, značka</td></tr>
+        <tr><td class="n">Body</td><td>Instrument Sans</td><td class="n">400–700</td><td>Odstavce, tlačítka, formuláře</td></tr>
+        <tr><td class="n">Mono</td><td>IBM Plex Mono</td><td class="n">400, 500</td><td>Popisky, jednotky, kód, data</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="spec">
+      <div class="lbl"><b>H1</b><code>clamp(3.25rem, 9.4vw, 11rem) / 0.92 / 300 / -0.035em / opsz 96</code></div>
+      <h1 style="font-size:clamp(2.5rem,7vw,5.5rem)">Ptáme se. Navrhujeme. Stavíme.</h1>
+    </div>
+    <div class="spec">
+      <div class="lbl"><b>H2</b><code>clamp(1.875rem, 3.8vw, 3.25rem) / 1.06 / 400 / opsz 72</code></div>
+      <h2>Většina digitálních projektů dopadne špatně ze tří důvodů.</h2>
+    </div>
+    <div class="spec">
+      <div class="lbl"><b>H3</b><code>clamp(1.75rem, 2.6vw, 2.25rem) / 1.08 / 500 / opsz 48</code></div>
+      <h3>Od první schůzky ke spuštění za osm týdnů</h3>
+    </div>
+    <div class="spec">
+      <div class="lbl"><b>H4 · H5 · H6</b><code>1.875 / 1.375 / 1.125 rem</code></div>
+      <h4 style="margin-bottom:.5rem">Chybí zadání a jasný cíl</h4>
+      <h5 style="margin-bottom:.5rem">Co po vás budeme potřebovat</h5>
+      <h6>Termín a rozsah</h6>
+    </div>
+    <div class="spec">
+      <div class="lbl"><b>Text</b><code>text-tiny · small · regular · medium · large</code></div>
+      <p class="text-large" style="margin-bottom:.6rem;color:var(--ink-2)">Large — úvodní odstavec pod nadpisem. Nejdřív se ptáme, co má projekt pro vaši firmu udělat.</p>
+      <p class="text-regular" style="margin-bottom:.6rem;color:var(--ink-2)">Regular — běžný odstavec. Věty patnáct až dvacet slov, bez dlouhých souvětí, plnovýznamová slovesa.</p>
+      <p class="text-small" style="margin-bottom:.6rem;color:var(--mute)">Small — poznámka pod prvkem, vysvětlivka, popisek obrázku.</p>
+      <p class="mono">Tiny mono — popisek, jednotka, datum</p>
+    </div>
+
+    <div class="rules" style="margin-top:2rem">
+      <div class="rule"><h6>Řádek 60 až 75 znaků</h6><p>Delší řádek se hůř čte. U textových bloků drž <code>max-width</code> kolem <code>66ch</code>.</p></div>
+      <div class="rule"><h6>Optická velikost se mění s velikostí</h6><p>Velký nadpis chce <code>opsz 96</code>, malý <code>opsz 18</code>. Bez toho vypadá velký nadpis rozplizle.</p></div>
+      <div class="rule no"><h6>Žádné čtvrté písmo</h6><p>Když něco nejde vyjádřit třemi písmy a jejich řezy, problém je v návrhu, ne v písmech.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KOMPONENTY ═══════════ -->
+<section class="blk">
+  <div class="wrap">
+    <header>
+      <span class="mono">04 — Komponenty</span>
+      <h2>Tlačítka, rádiusy, stíny</h2>
+      <p>Rádius nese význam: čím větší plocha, tím větší zaoblení. Stín má jen tlačítko a vyskakovací karta.</p>
+    </header>
+
+    <h5 style="margin-bottom:.9rem">Tlačítka</h5>
+    <div class="btnrow">
+      <a class="btn" href="#">Rezervovat úvodní hovor</a>
+      <a class="btn secondary" href="#">Jak pracujeme</a>
+      <a class="btn small" href="#">Malé</a>
+    </div>
+    <p class="text-small" style="color:var(--mute);margin-top:.8rem;max-width:60ch">Minimální výška 44 px, protože na mobilu se do menšího tlačítka netrefíš. Primární tlačítko je na stránce jedno na sekci.</p>
+
+    <h5 style="margin:2rem 0 .9rem">Rádiusy</h5>
+    <div class="tw"><table>
+      <thead><tr><th>Token</th><th class="n">Hodnota</th><th>Kde</th></tr></thead>
+      <tbody>
+        <tr><td class="n">radius-small</td><td class="n">8 px</td><td>Štítky, vstupy, malé prvky</td></tr>
+        <tr><td class="n">radius-button</td><td class="n">12 px</td><td>Tlačítka</td></tr>
+        <tr><td class="n">radius-medium</td><td class="n">14 px</td><td>Karty, vyskakovací panely</td></tr>
+        <tr><td class="n">radius-large</td><td class="n">22 px</td><td>Velké plochy, obrázkové bloky</td></tr>
+      </tbody>
+    </table></div>
+
+    <h5 style="margin:2rem 0 .9rem">Odsazení sekcí</h5>
+    <div class="tw"><table>
+      <thead><tr><th>Token</th><th class="n">Desktop</th><th class="n">Mobil</th><th>Kde</th></tr></thead>
+      <tbody>
+        <tr><td class="n">section-small</td><td class="n">3 rem</td><td class="n">2 rem</td><td>Pruh s výzvou, patička</td></tr>
+        <tr><td class="n">section-medium</td><td class="n">5 rem</td><td class="n">3 rem</td><td>Většina sekcí</td></tr>
+        <tr><td class="n">section-large</td><td class="n">7 rem</td><td class="n">4 rem</td><td>Hero, kontakt</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ═══════════ DOKUMENTY ═══════════ -->
+<section class="blk">
+  <div class="wrap">
+    <header>
+      <span class="mono">05 — Dokumenty</span>
+      <h2>Nabídka, faktura, prezentace, zápis</h2>
+      <p>Stejný systém, jiné médium. Papír je bílý, ne šedomodrý, a akcent se používá střídměji než na webu.</p>
+    </header>
+
+    <div class="tw" style="margin-bottom:2rem"><table>
+      <thead><tr><th>Prvek</th><th>Nastavení</th><th>Poznámka</th></tr></thead>
+      <tbody>
+        <tr><td class="n">Formát</td><td>A4, okraje 18 mm, dole 22 mm</td><td>Dolní okraj větší kvůli číslu stránky</td></tr>
+        <tr><td class="n">Podklad</td><td>Bílá #FFFFFF</td><td>Šedomodrá jen jako podbarvení tabulky</td></tr>
+        <tr><td class="n">Základní text</td><td>Instrument Sans 10,5 pt / 1,45</td><td>Nikdy pod 9 pt</td></tr>
+        <tr><td class="n">Nadpis dokumentu</td><td>Bricolage 24 pt / 500 / opsz 32</td><td>Jeden na dokument</td></tr>
+        <tr><td class="n">Mezinadpis</td><td>Bricolage 14 pt / 600 / opsz 24</td><td></td></tr>
+        <tr><td class="n">Popisky a čísla</td><td>IBM Plex Mono 8 pt, prostrkání 0,1 em, verzálky</td><td>Datum, číslo faktury, jednotky</td></tr>
+        <tr><td class="n">Linka nad součtem</td><td>2 pt #101321</td><td>Jediná silná linka v dokumentu</td></tr>
+        <tr><td class="n">Akcent</td><td>Jen v hlavičce a u celkové částky</td><td>Ne v tabulkách</td></tr>
+        <tr><td class="n">Logo</td><td>Vlevo nahoře, výška 8 mm</td><td>Modrá na bílé, bílá na tmavé</td></tr>
+      </tbody>
+    </table></div>
+
+    <h5 style="margin-bottom:.9rem">Ukázka: faktura</h5>
+    <div class="doc">
+      <div class="doc-head">
+        <div>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem">
+            <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><path fill="#1D2BE8" d="M4 4h9v24H4zM19 4l9 24h-9z"/></svg>
+            <b style="font-family:var(--font-heading);color:var(--accent);font-weight:600">Webkit.Studio</b>
+          </div>
+          <div class="t">Faktura 2026014</div>
+        </div>
+        <div style="text-align:right">
+          <div class="mono">Splatnost</div>
+          <div style="font-family:var(--font-heading);font-size:1.125rem;font-weight:600">22. 9. 2026</div>
+        </div>
+      </div>
+      <div class="doc-meta">
+        <div><div class="k">Odběratel</div><div class="v">Elektro Drapač s.r.o.<br>Nádražní 118, Kolín</div></div>
+        <div><div class="k">Vystaveno</div><div class="v">8. 9. 2026</div></div>
+        <div><div class="k">Číslo účtu</div><div class="v">— doplnit —</div></div>
+      </div>
+      <div class="tw"><table>
+        <thead><tr><th>Položka</th><th class="n">Hodin</th><th class="n">Sazba</th><th class="n">Celkem</th></tr></thead>
+        <tbody>
+          <tr><td>Vedení projektu, analýza a zadání</td><td class="n">18</td><td class="n">1 200 Kč</td><td class="n">21 600 Kč</td></tr>
+          <tr><td>Návrh a prototyp</td><td class="n">26</td><td class="n">1 200 Kč</td><td class="n">31 200 Kč</td></tr>
+          <tr><td>Realizace ve Webflow</td><td class="n">32</td><td class="n">1 200 Kč</td><td class="n">38 400 Kč</td></tr>
+        </tbody>
+      </table></div>
+      <div class="doc-total"><span>Celkem</span><span>91 200 Kč</span></div>
+      <p class="text-small" style="color:var(--mute);margin-top:1rem">Nejsem plátce DPH. Fakturuji na základě smlouvy o dílo ze dne 4. 8. 2026.</p>
+    </div>
+
+    <div class="rules" style="margin-top:2rem">
+      <div class="rule"><h6>Prezentace: 16 : 9, jedna myšlenka na snímek</h6><p>Nadpis Bricolage 32 pt, text 16 pt. Tmavé schéma na oddělovací snímky, bílé na obsahové.</p></div>
+      <div class="rule"><h6>Nabídka končí cenou a termínem</h6><p>Ne seznamem služeb. Poslední strana má rozsah, cenu, termín a jeden způsob, jak potvrdit.</p></div>
+      <div class="rule no"><h6>Žádné vodoznaky a rámečky</h6><p>Dokument drží pohromadě typografie a bílé místo, ne dekorace.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ HLAS ═══════════ -->
+<section class="blk">
+  <div class="wrap">
+    <header>
+      <span class="mono">06 — Hlas</span>
+      <h2>Jak se v tomhle systému píše</h2>
+      <p>Vizuál a text jsou jedna věc. Když text nesedí, nepomůže ani dokonalá typografie.</p>
+    </header>
+    <div class="rules">
+      <div class="rule"><h6>Podstatné na začátek</h6><p>První věta říká, o co jde. Kontext až potom.</p></div>
+      <div class="rule"><h6>Věty patnáct až dvacet slov</h6><p>Bez dlouhých souvětí. Plnovýznamová slovesa místo řetězů podstatných jmen.</p></div>
+      <div class="rule"><h6>Nadpisy slovesné</h6><p>„Od první schůzky ke spuštění za osm týdnů“, ne „Proces spolupráce“.</p></div>
+      <div class="rule"><h6>Konkrétní číslo místo přídavného jména</h6><p>„Do tří týdnů od zaměření“, ne „rychle“.</p></div>
+      <div class="rule no"><h6>Žádný korporátní tón</h6><p>Žádná „inovativní řešení“, „komplexní přístup“ ani „na míru vašim potřebám“.</p></div>
+      <div class="rule no"><h6>Žádné emoji v obchodních textech</h6><p>Na LinkedInu ani v nabídkách. Text musí unést sám sebe.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="end">
+  <div class="wrap">
+    <p>Webkit.Studio · brand sheet · zdroj: <code>docs/brand-sheet.html</code> v repu webkit-studio/webkit-studio</p>
+    <p style="margin-top:.4rem">Proměnné mají stejná jména jako ve Webflow. Když měníš hodnotu, měň ji tady, pak ve Webflow, pak v <code>site/webkit.css</code>.</p>
+  </div>
+</footer>
+
+<script type="application/json" id="tokens">
+{
+  "brand": "Webkit.Studio",
+  "verze": "2026-09",
+  "barvy": {
+    "znacka": {
+      "accent": "#1D2BE8",
+      "accent-dark": "#1523B8",
+      "accent-soft": "#D8DCFB",
+      "lilac": "#8A96FF"
+    },
+    "neutralni": {
+      "white": "#FFFFFF",
+      "neutral-lightest": "#ECEFF3",
+      "neutral-lighter": "#E2E6EC",
+      "card": "#F7F8FA",
+      "neutral-light": "#CDD2DC",
+      "line-strong": "#AEB5C4",
+      "neutral": "#646A7E",
+      "neutral-dark": "#3A3F52",
+      "neutral-darker": "#181C2E",
+      "neutral-darkest": "#101321",
+      "text-inverse": "#F1F2F6",
+      "dark-line": "#2C3350"
+    },
+    "vyznamove": {
+      "success": "#17824A",
+      "danger": "#E0483F"
+    }
+  },
+  "schemata": {
+    "1": {"nazev": "šedomodrá", "background": "#ECEFF3", "text": "#101321", "foreground": "#FFFFFF", "border": "#CDD2DC", "accent": "#1D2BE8"},
+    "2": {"nazev": "bílá", "background": "#FFFFFF", "text": "#101321", "foreground": "#F7F8FA", "border": "#CDD2DC", "accent": "#1D2BE8"},
+    "3": {"nazev": "tmavá", "background": "#101321", "text": "#F1F2F6", "foreground": "#181C2E", "border": "#2C3350", "accent": "#8A96FF"},
+    "4": {"nazev": "modrá", "background": "#1D2BE8", "text": "#FFFFFF", "foreground": "#1523B8", "border": "#1523B8", "accent": "#FFFFFF"},
+    "5": {"nazev": "lila", "background": "#8A96FF", "text": "#101321", "foreground": "#FFFFFF", "border": "#101321", "accent": "#101321"}
+  },
+  "pisma": {
+    "heading": {"rodina": "Bricolage Grotesque", "typ": "variabilní", "wght": "200-800", "opsz": "12-96"},
+    "body": {"rodina": "Instrument Sans", "typ": "variabilní", "wght": "400-700"},
+    "mono": {"rodina": "IBM Plex Mono", "typ": "statické", "rezy": [400, 500]}
+  },
+  "typograficka-skala": {
+    "h1": {"size": "clamp(3.25rem, 9.4vw, 11rem)", "lh": 0.92, "wght": 300, "ls": "-0.035em", "opsz": 96},
+    "h2": {"size": "clamp(1.875rem, 3.8vw, 3.25rem)", "lh": 1.06, "wght": 400, "ls": "-0.03em", "opsz": 72},
+    "h3": {"size": "clamp(1.75rem, 2.6vw, 2.25rem)", "lh": 1.08, "wght": 500, "ls": "-0.025em", "opsz": 48},
+    "h4": {"size": "clamp(1.375rem, 2.2vw, 1.875rem)", "lh": 1.15, "wght": 500, "opsz": 32},
+    "h5": {"size": "clamp(1.1875rem, 1.6vw, 1.375rem)", "lh": 1.25, "wght": 600, "opsz": 24},
+    "h6": {"size": "1.125rem", "lh": 1.35, "wght": 600, "opsz": 18},
+    "text-tiny": "0.8125rem",
+    "text-small": "0.96875rem",
+    "text-regular": "1.0625rem",
+    "text-medium": "1.1875rem",
+    "text-large": "clamp(1.0625rem, 1.35vw, 1.3125rem)",
+    "body": {"size": "1.0625rem", "lh": 1.55}
+  },
+  "radiusy": {"small": "8px", "button": "12px", "medium": "14px", "large": "22px"},
+  "odsazeni-sekci": {"small": "3rem", "medium": "5rem", "large": "7rem"},
+  "stiny": {
+    "button": "0 10px 26px -12px rgba(29,43,232,.55)",
+    "card": "0 30px 60px -30px rgba(16,19,33,.45), 0 0 0 1px rgba(16,19,33,.06)"
+  },
+  "tlacitko": {
+    "min-height": "2.75rem",
+    "padding": "1.0625rem 1.625rem",
+    "font-size": "0.96875rem",
+    "font-weight": 600,
+    "radius": "12px"
+  },
+  "dokumenty": {
+    "format": "A4",
+    "okraje": {"nahore": "18mm", "boky": "18mm", "dole": "22mm"},
+    "podklad": "#FFFFFF",
+    "text": {"pismo": "Instrument Sans", "velikost": "10.5pt", "lh": 1.45},
+    "nadpis": {"pismo": "Bricolage Grotesque", "velikost": "24pt", "wght": 500, "opsz": 32},
+    "mezinadpis": {"pismo": "Bricolage Grotesque", "velikost": "14pt", "wght": 600, "opsz": 24},
+    "popisky": {"pismo": "IBM Plex Mono", "velikost": "8pt", "ls": "0.1em", "verzalky": true},
+    "logo-vyska": "8mm"
+  },
+  "pravidla": [
+    "Kontrast textu minimálně 4,5 : 1, velkého textu a prvků 3 : 1.",
+    "Na akcentu #1D2BE8 je vždy bílý text.",
+    "Lila #8A96FF funguje jen na tmavém podkladu.",
+    "Jedno primární tlačítko na sekci.",
+    "Modré schéma maximálně jednou na stránku.",
+    "Řádek textu 60 až 75 znaků.",
+    "Optická velikost písma se mění s velikostí nadpisu.",
+    "Žádné čtvrté písmo, žádné emoji v obchodních textech."
+  ]
+}
+</script>
+</body>
+</html>
