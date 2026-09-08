@@ -1,3 +1,4 @@
+
 /* Webkit.Studio homepage. Nasazeno jako HTML Embed na konci stránky. */
 (function(){
 function boot(){
@@ -5,12 +6,10 @@ var q=function(s,r){return (r||document).querySelector(s)},qa=function(s,r){retu
 var rm=matchMedia('(prefers-reduced-motion: reduce)').matches,fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 var cl=function(v,a,b){return Math.max(a,Math.min(b,v))},lp=function(a,b,t){return a+(b-a)*t},eo=function(t){return 1-Math.pow(1-t,3)};
 
-/* obrazky v kartach jsou dekorace, ctecky je preskoci */
 qa('#brzdi .problem_visual').forEach(function(v){v.setAttribute('aria-hidden','true');});
 
-/* Krivka ve treti karte byla ve Webflow poskladana z divu se zaoblenymi rohy,
-   takze misto vzestupu a padu kreslila V. Vlozime stejne SVG jako prototyp v8;
-   puvodni divy schova page.css. Popisek "spusteni" zustava webflowovy. */
+/* Krivka ve treti karte byla poskladana z divu, takze kreslila V misto
+   vzestupu a padu. Vlozime stejne SVG jako prototyp v8. */
 var krivka=q('#brzdi .problem_visual.is-curve');
 if(krivka&&!q('.wk-krivka',krivka)){
 krivka.insertAdjacentHTML('beforeend','<svg class="wk-krivka" viewBox="0 0 300 170" preserveAspectRatio="none" aria-hidden="true" focusable="false">'+
@@ -24,25 +23,15 @@ var sec=q('#demo'),mac=q('#mac');
 if(sec&&mac){
 var intro=q('#dintro'),pg=q('#macpg'),shell=q('.mac-shell',mac),pin=q('.demo-pin',sec),dwin=q('#dwin');
 var W=1200,PADX=24,PADT=18,PADB=16,SMAX=1.22,pgH=786,raf=0;
-
-/* Vyska mocku neni konstanta. Meni se podle toho, kolik uz je opraveno,
-   takze ji pred kazdym prepoctem zmerime. Spodni lista uz je soucasti okna
-   (flex polozka), proto ji od dostupne vysky neodecitame. */
 var measure=function(){
   pgH=pg.offsetHeight||786;
   if(dwin&&mac) mac.style.setProperty('--dwinh',dwin.offsetHeight+'px');
 };
-
-/* Meritko se strope 1.22, aby mock na sirokem monitoru nebyl vetsi nez web sam.
-   --tf/--tp/--tw jdou obracene k meritku: stitky jsou poznamky NAD mockem,
-   nemaji se s nim zvetsovat. Spodni mez 0.9 drzi jejich vysku v uzde,
-   aby se stitek u nadpisu nedostal na logo. */
 var fit=function(){
   var s=Math.min((mac.clientWidth-PADX*2)/W,((shell.clientHeight||720)-PADT-PADB)/pgH,SMAX);
   if(!(s>0.2))s=0.2;
   pg.style.transform='scale('+s.toFixed(4)+')';
   pg.style.left=Math.max(0,(mac.clientWidth-W*s)/2).toFixed(1)+'px';
-  /* zbyde-li nad ramec odsazeni misto, mock se vycentruje, at nevisi u horni hrany */
   var volno=(shell.clientHeight||720)-pgH*s;
   pg.style.top=(volno>PADT+PADB?Math.round(volno/2):PADT)+'px';
   var iv=1/Math.max(s,0.9);
@@ -74,7 +63,6 @@ qa('.score',sec).forEach(function(sc){
   var b=q('b',sc);if(b)b.textContent=String(n);
   sc.style.setProperty('--p',(n/keys.length*100).toFixed(1)+'%');
   sc.classList.toggle('done',n===keys.length);
-  /* restart animace, jinak druhy klik uz nenadskoci */
   if(n>prev&&!rm){sc.classList.remove('bump');void sc.offsetWidth;sc.classList.add('bump');}});
 if(n===keys.length)qa('.dwin',sec).forEach(function(d){d.classList.add('on');});
 prev=n;relayout();};
@@ -82,21 +70,59 @@ var fx=function(k){if(st[k])return;st[k]=true;qa('[data-fix="'+k+'"]',sec).forEa
 qa('[data-fix]',sec).forEach(function(el){el.addEventListener('click',function(e){e.preventDefault();fx(el.getAttribute('data-fix'));});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();fx(el.getAttribute('data-fix'));}});});
 up();}
 
-/* ---------- sluzby: postupne se rozsveci jedna polozka ---------- */
+/* ---------- sluzby: postupne se rozsveci jedna polozka ----------
+   WCAG 2.2.2 chce, aby se pohyb dal zastavit, nebo aby sam skoncil.
+   Na mysi ho zastavi najeti, na dotyku ale pointerenter nechodi, takze
+   animace bezela donekonecna a nedala se zastavit vubec. Ted probehne
+   sedm rozsviceni a zhasne; kdyz sekce vypadne z obrazovky a vrati se,
+   pocitadlo se vynuluje. Dotyk ji zastavi natrvalo. */
 var cap=q('#sluzby .services_grid'),lis=qa('#sluzby .services_item');
 if(cap&&lis.length&&!rm){
 var cols=lis.map(function(li){return li.closest('.services_grid > div');});
-var bag=[],last=-1,vis=false,pause=false,rt=null;
-if(window.IntersectionObserver){new IntersectionObserver(function(e){vis=e[0].isIntersecting;}).observe(cap);}else{vis=true;}
+var bag=[],last=-1,vis=false,pause=false,rt=null,beh=0;
+if(window.IntersectionObserver){new IntersectionObserver(function(e){var v=e[0].isIntersecting;if(v&&!vis)beh=0;vis=v;}).observe(cap);}else{vis=true;}
 var refill=function(){for(var t=0;t<50;t++){var p=lis.map(function(_,i){return i;}).sort(function(){return Math.random()-0.5;}),ok=true;
 for(var i=1;i<p.length;i++){if(cols[p[i]]===cols[p[i-1]]){ok=false;break;}}
 if(ok&&(last<0||cols[p[0]]!==cols[last])){bag=p;return;}}bag=lis.map(function(_,i){return i;});};
-var tick=function(){if(vis&&!pause){if(!bag.length)refill();var i=bag.shift();lis.forEach(function(l){l.classList.remove('is-hl');});lis[i].classList.add('is-hl');last=i;}setTimeout(tick,380+Math.random()*420);};tick();
-if(fine){cap.addEventListener('pointerenter',function(){pause=true;clearTimeout(rt);lis.forEach(function(l){l.classList.remove('is-hl');});});cap.addEventListener('pointerleave',function(){clearTimeout(rt);rt=setTimeout(function(){pause=false;},800);});}}
+var tick=function(){if(vis&&!pause){if(beh>=7){lis.forEach(function(l){l.classList.remove('is-hl');});setTimeout(tick,1500);return;}beh++;if(!bag.length)refill();var i=bag.shift();lis.forEach(function(l){l.classList.remove('is-hl');});lis[i].classList.add('is-hl');last=i;}setTimeout(tick,380+Math.random()*420);};tick();
+var stop=function(){pause=true;clearTimeout(rt);lis.forEach(function(l){l.classList.remove('is-hl');});};
+cap.addEventListener('pointerenter',stop);cap.addEventListener('pointerdown',stop);
+cap.addEventListener('pointerleave',function(){if(!fine)return;clearTimeout(rt);rt=setTimeout(function(){pause=false;beh=0;},800);});}
 
 /* ---------- postup: na mobilu se blok po klepnuti rozbali ---------- */
 var bl=qa('#postup .process_block');
 bl.forEach(function(b){b.addEventListener('click',function(){if(innerWidth>767)return;var o=b.classList.contains('is-open');bl.forEach(function(x){x.classList.remove('is-open');});if(!o)b.classList.add('is-open');});b.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();b.click();}});});
+
+/* ---------- kontakt: hlasky, ktere se samy vypisuji do pole Co resite ----------
+   Stejne vety jako v prototypu v8. Placeholder zustava jako zaloha,
+   kdyby tenhle kus nedobehl; CSS ho schova az kdyz obalka vznikne. */
+var ta=q('#co-resite');
+if(ta&&!ta.closest('.wk-tawrap')){
+var HLASKY=['Potřebujeme nový web. Ten současný nám nepřivádí poptávky a nejde v něm nic změnit.',
+'Chceme sjednotit, jak firma vypadá na autech, na webu a v nabídkách.',
+'Nenašli jsme systém, který zvládne naše zakázky. Tabulky a formuláře už nestačí.',
+'Rozjíždíme nový produkt a potřebujeme stránku, která bude do měsíce fungovat.'];
+var obal=document.createElement('div');obal.className='wk-tawrap';
+ta.parentNode.insertBefore(obal,ta);obal.appendChild(ta);
+var duch=document.createElement('div');duch.className='wk-ghost';duch.setAttribute('aria-hidden','true');
+obal.insertBefore(duch,ta);
+var schovej=function(){obal.classList.toggle('typing',ta.value.length>0||document.activeElement===ta);};
+['input','focus','blur'].forEach(function(u){ta.addEventListener(u,schovej);});
+schovej();
+if(rm){duch.textContent=HLASKY[0];}
+else{var hi=0,zi=0,maze=false;
+(function krok(){var v=HLASKY[hi];
+if(!maze){zi++;duch.textContent=v.slice(0,zi);
+if(zi===v.length){maze=true;setTimeout(krok,2600);return;}
+setTimeout(krok,28);}
+else{zi-=3;
+if(zi<=0){zi=0;maze=false;hi=(hi+1)%HLASKY.length;duch.textContent='';setTimeout(krok,400);return;}
+duch.textContent=v.slice(0,zi);setTimeout(krok,12);}})();}}
+
+/* ---------- paticka: znovu vyvolat listu se souhlasem ---------- */
+qa('[data-wk-cookies]').forEach(function(b){b.addEventListener('click',function(){
+try{localStorage.removeItem('wk-consent');}catch(e){}
+location.reload();});});
 
 /* ---------- kontakt: slovo se maze a pise po znacich ---------- */
 var rw=q('#wk-rotword');
@@ -116,7 +142,6 @@ if(prvky.length){
 document.documentElement.classList.add('wk-js');
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;e.target.classList.add('is-in');io.unobserve(e.target);});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});
 prvky.forEach(function(el){io.observe(el);});
-/* pojistka: kdyby observer nesepnul, po trech vterinach je videt vsechno */
 setTimeout(function(){prvky.forEach(function(el){el.classList.add('is-in');});},3000);}}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
