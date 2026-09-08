@@ -4,6 +4,8 @@ function boot(){
 var q=function(s,r){return (r||document).querySelector(s)},qa=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
 var rm=matchMedia('(prefers-reduced-motion: reduce)').matches,fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 var cl=function(v,a,b){return Math.max(a,Math.min(b,v))},lp=function(a,b,t){return a+(b-a)*t},eo=function(t){return 1-Math.pow(1-t,3)};
+/* obrazky v kartach jsou dekorace, ctecky je preskoci */
+qa('#brzdi .problem_visual').forEach(function(v){v.setAttribute('aria-hidden','true');});
 var sec=q('#demo'),mac=q('#mac');
 if(sec&&mac){
 var intro=q('#dintro'),pg=q('#macpg'),shell=q('.mac-shell',mac),pin=q('.demo-pin',sec),W=1200;

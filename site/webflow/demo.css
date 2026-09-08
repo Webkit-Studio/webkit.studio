@@ -2,7 +2,7 @@
 #demo *{box-sizing:border-box}
 #demo img{max-width:100%;display:block}
 #demo a{color:inherit;text-decoration:none}
-#demo h2,#demo h4{font-family:var(--display);letter-spacing:-.03em;margin:0;text-wrap:balance}
+#demo h2,#demo .dh{font-family:var(--display);letter-spacing:-.03em;margin:0;text-wrap:balance}
 #demo h2{font-size:clamp(30px,3.8vw,52px);line-height:1.06;font-weight:400}
 #demo p{margin:0}
 .demo_embed{display:contents}
@@ -35,7 +35,7 @@
 #demo .dnav b{font-family:var(--display);font-weight:600;color:var(--ink);font-size:18px}
 #demo .dnav span{display:flex;gap:26px}
 #demo .dhero{display:grid;grid-template-columns:1.15fr 1fr;gap:48px;padding:30px 56px 20px;align-items:center}
-#demo .dhero h4{font-family:var(--display);font-variation-settings:"opsz" 96,"wght" 400;font-size:46px;line-height:1.02;letter-spacing:-.03em;max-width:16ch;min-height:2.2em}
+#demo .dhero .dh{font-family:var(--display);font-variation-settings:"opsz" 96,"wght" 400;font-size:46px;line-height:1.02;letter-spacing:-.03em;max-width:16ch;min-height:2.2em}
 #demo .fx{position:relative;cursor:pointer;border-radius:10px}
 #demo .fx .bad, #demo .fx .good{display:block;transition:opacity .45s var(--ease),transform .45s var(--ease)}
 #demo .fx .good{position:absolute;inset:0;opacity:0;transform:translateY(8px);pointer-events:none}
@@ -50,9 +50,9 @@
 #demo .fx.ok .tag{opacity:1;transform:none}
 #demo .dspeed .tag{position:static;margin-left:auto;transform:none;background:rgba(16,19,33,.9)}
 #demo .dspeed.ok .tag{transform:none}
-#demo .dhero h4 .bad{color:var(--mute);font-variation-settings:"opsz" 96,"wght" 300}
-#demo .dhero h4 .tag{right:0;top:-8px;bottom:auto;transform:translateY(-100%)}
-#demo .dhero h4.ok .tag{transform:translateY(-100%)}
+#demo .dhero .dh .bad{color:var(--mute);font-variation-settings:"opsz" 96,"wght" 300}
+#demo .dhero .dh .tag{right:0;top:-8px;bottom:auto;transform:translateY(-100%)}
+#demo .dhero .dh.ok .tag{transform:translateY(-100%)}
 #demo .dcta{display:inline-block;margin-top:22px;font-weight:600;font-size:15px}
 #demo .dcta .bad{color:var(--mute);text-decoration:underline;padding:8px 0}
 #demo .dcta .good{background:var(--blue);color:#fff;padding:13px 20px;border-radius:10px;width:max-content}
@@ -106,9 +106,9 @@
 #demo .pcall .good svg{width:18px;height:18px}
 #demo .pcall .tag{right:0;top:calc(100% + 8px);bottom:auto;max-width:240px}
 #demo .phero{padding:8px 18px 18px}
-#demo .phero h4{font-family:var(--display);font-variation-settings:"opsz" 96,"wght" 400;font-size:26px;line-height:1.05;letter-spacing:-.03em;min-height:2.1em}
-#demo .phero h4 .bad{color:var(--mute);font-variation-settings:"opsz" 96,"wght" 300}
-#demo .phero h4 .tag{right:0;top:-8px;bottom:auto;transform:translateY(-100%);max-width:260px}
+#demo .phero .dh{font-family:var(--display);font-variation-settings:"opsz" 96,"wght" 400;font-size:26px;line-height:1.05;letter-spacing:-.03em;min-height:2.1em}
+#demo .phero .dh .bad{color:var(--mute);font-variation-settings:"opsz" 96,"wght" 300}
+#demo .phero .dh .tag{right:0;top:-8px;bottom:auto;transform:translateY(-100%);max-width:260px}
 #demo .phero .dcta{display:block;margin-top:14px;font-size:14px}
 #demo .phero .dcta .good{display:block;text-align:center;width:auto;padding:13px 16px}
 #demo .phero .dcta .tag{left:0;right:0;top:calc(100% + 8px);bottom:auto;transform:none;max-width:none;width:auto}
