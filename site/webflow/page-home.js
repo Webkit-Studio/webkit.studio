@@ -11,26 +11,39 @@ qa('#brzdi .problem_visual').forEach(function(v){v.setAttribute('aria-hidden','t
 /* ---------- interaktivni ukazka ---------- */
 var sec=q('#demo'),mac=q('#mac');
 if(sec&&mac){
-var intro=q('#dintro'),pg=q('#macpg'),shell=q('.mac-shell',mac),pin=q('.demo-pin',sec),dwin=q('#dwin'),W=1200,H=740;
+var intro=q('#dintro'),pg=q('#macpg'),shell=q('.mac-shell',mac),pin=q('.demo-pin',sec),dwin=q('#dwin');
+var W=1200,PADX=24,PADT=18,PADB=16,SMAX=1.22,pgH=786,raf=0;
 
-/* Ukazatel oprav ven z mocku. Uvnitr ho orezaval overflow a na sirokem
-   monitoru skoncil u kraje obrazovky, kam se nikdo nedivá. */
-var score=q('.mac .score',sec);
-if(score&&pin) pin.appendChild(score);
-
-/* Meritko se pocita z dostupne vysky BEZ spodni listy, jinak lista
-   prekryje formular. Strop 1.15 drzi mock v navrhove velikosti, aby
-   na sirokem monitoru nevypadal nafouknuty. */
-var fit=function(){
-  var dwinH=dwin?dwin.offsetHeight:0;
-  var dostupna=Math.max(240,(shell.clientHeight||720)-dwinH);
-  var s=Math.min(mac.clientWidth/W,dostupna/H,1.15);
-  pg.style.transform='scale('+s+')';
-  pg.style.left=Math.max(0,(mac.clientWidth-W*s)/2)+'px';
-  pg.style.top=Math.max(0,(dostupna-H*s)/2)+'px';
+/* Vyska mocku neni konstanta. Meni se podle toho, kolik uz je opraveno,
+   takze ji pred kazdym prepoctem zmerime. Spodni lista uz je soucasti okna
+   (flex polozka), proto ji od dostupne vysky neodecitame. */
+var measure=function(){
+  pgH=pg.offsetHeight||786;
+  if(dwin&&mac) mac.style.setProperty('--dwinh',dwin.offsetHeight+'px');
 };
-if(window.ResizeObserver){new ResizeObserver(fit).observe(mac);new ResizeObserver(fit).observe(shell);}
-fit();addEventListener('resize',fit);
+
+/* Meritko se strope 1.22, aby mock na sirokem monitoru nebyl vetsi nez web sam.
+   --tf/--tp/--tw jdou obracene k meritku: stitky jsou poznamky NAD mockem,
+   nemaji se s nim zvetsovat. Spodni mez 0.9 drzi jejich vysku v uzde,
+   aby se stitek u nadpisu nedostal na logo. */
+var fit=function(){
+  var s=Math.min((mac.clientWidth-PADX*2)/W,((shell.clientHeight||720)-PADT-PADB)/pgH,SMAX);
+  if(!(s>0.2))s=0.2;
+  pg.style.transform='scale('+s.toFixed(4)+')';
+  pg.style.left=Math.max(0,(mac.clientWidth-W*s)/2).toFixed(1)+'px';
+  /* zbyde-li nad ramec odsazeni misto, mock se vycentruje, at nevisi u horni hrany */
+  var volno=(shell.clientHeight||720)-pgH*s;
+  pg.style.top=(volno>PADT+PADB?Math.round(volno/2):PADT)+'px';
+  var iv=1/Math.max(s,0.9);
+  pg.style.setProperty('--tf',(13.5*iv).toFixed(2)+'px');
+  pg.style.setProperty('--tp',(8*iv).toFixed(2)+'px');
+  pg.style.setProperty('--tw',Math.round(300*iv)+'px');
+};
+var relayout=function(){measure();fit();};
+var raf2=function(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;relayout();});};
+if(window.ResizeObserver){new ResizeObserver(raf2).observe(mac);new ResizeObserver(raf2).observe(shell);}
+relayout();addEventListener('resize',raf2);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(relayout);
 
 var grow=function(){if(rm)return;
 if(innerWidth<=760){document.body.classList.remove('demo-on');mac.style.width='';mac.style.height='';intro.style.opacity='';intro.style.transform='';return;}
@@ -39,12 +52,21 @@ intro.style.opacity=String(1-Math.min(1,g*1.8));intro.style.transform='scale('+(
 document.body.classList.toggle('demo-on',g>0.85);
 mac.style.width=lp(innerWidth*0.72,innerWidth,g)+'px';mac.style.height=lp(vh*0.62,vh,g)+'px';mac.style.setProperty('--g',g.toFixed(3));fit();};
 if(!rm){addEventListener('scroll',grow,{passive:true});addEventListener('resize',grow);grow();}
-if(window.IntersectionObserver){new IntersectionObserver(function(e){sec.classList.toggle('vis',e[0].isIntersecting);},{threshold:0.15}).observe(q('#phone')||sec);}
+if(window.IntersectionObserver){new IntersectionObserver(function(e){sec.classList.toggle('vis',e[0].isIntersecting);},{threshold:0.15}).observe(sec);}
 
-var keys=['s','h','c','t','i','f'],st={};keys.forEach(function(k){st[k]=false;});
+var keys=['s','h','c','t','i','f'],st={},prev=0;keys.forEach(function(k){st[k]=false;});
 var up=function(){var n=keys.filter(function(k){return st[k];}).length;
-qa('.score',sec).forEach(function(sc){qa('.segs i',sc).forEach(function(i,j){i.classList.toggle('on',j<n);});var b=q('b',sc);if(b)b.textContent=String(n);sc.classList.toggle('done',n===keys.length);});
-if(n===keys.length)qa('.dwin',sec).forEach(function(d){d.classList.add('on');});};
+qa('.score',sec).forEach(function(sc){
+  qa('.segs i',sc).forEach(function(i,j){var on=j<n;
+    if(on&&!i.classList.contains('on')&&!rm){i.classList.add('pop');setTimeout(function(){i.classList.remove('pop');},540);}
+    i.classList.toggle('on',on);});
+  var b=q('b',sc);if(b)b.textContent=String(n);
+  sc.style.setProperty('--p',(n/keys.length*100).toFixed(1)+'%');
+  sc.classList.toggle('done',n===keys.length);
+  /* restart animace, jinak druhy klik uz nenadskoci */
+  if(n>prev&&!rm){sc.classList.remove('bump');void sc.offsetWidth;sc.classList.add('bump');}});
+if(n===keys.length)qa('.dwin',sec).forEach(function(d){d.classList.add('on');});
+prev=n;relayout();};
 var fx=function(k){if(st[k])return;st[k]=true;qa('[data-fix="'+k+'"]',sec).forEach(function(el){el.classList.add('ok');});up();};
 qa('[data-fix]',sec).forEach(function(el){el.addEventListener('click',function(e){e.preventDefault();fx(el.getAttribute('data-fix'));});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();fx(el.getAttribute('data-fix'));}});});
 up();}

@@ -169,86 +169,13 @@
 }
 
 /* ══════════ 4. INTERAKTIVNÍ UKÁZKA ══════════
-   Přebíjí styly z embedu ukázky. Vyšší specificita (#demo.section_demo)
-   je schválně, aby to platilo bez ohledu na pořadí embedů. */
-
-/* Mock se nesmí nafouknout tak, že přeteče. Skript počítá měřítko
-   z dostupné výšky bez spodní lišty, tady jen doladíme umístění. */
-#demo.section_demo .mac-shell{display:block}
-#demo.section_demo .mac-pg{transform-origin:top left}
-
-/* Štítek u nadpisu mířil doprava a na širokém monitoru utíkal z plochy.
-   Otočíme ho doleva, tam je vždycky místo. */
-#demo.section_demo .dhero .dh .tag{left:0;right:auto;max-width:36ch}
-#demo.section_demo .dcta .tag{max-width:34ch}
-#demo.section_demo .dimg .tag{right:12px;left:auto;max-width:30ch}
-
-/* ---------- ukazatel oprav ----------
-   Skript ho vytáhne z mocku ven do .demo-pin, ať ho neořízne overflow
-   a ať je vidět pořád. Nahoře uprostřed, kde nic nepřekáží. */
-#demo.section_demo .demo-pin > .score{
-  position:absolute;
-  left:50%;
-  top:clamp(1rem,3vh,2.25rem);
-  right:auto;
-  bottom:auto;
-  transform:translateX(-50%);
-  z-index:20;
-  gap:.875rem;
-  padding:.625rem 1.125rem .625rem .875rem;
-  font-size:.9375rem;
-  box-shadow:0 22px 50px -20px rgba(16,19,33,.55);
-  transition:background-color .45s var(--ease),box-shadow .45s var(--ease);
-}
-#demo.section_demo .demo-pin > .score .segs{gap:.3rem}
-#demo.section_demo .demo-pin > .score .segs i{
-  width:1.375rem;height:.5rem;border-radius:.25rem;
-  transition:background-color .35s var(--ease),transform .35s var(--ease);
-}
-/* každý opravený segment cvakne, ať je z toho odměna */
-#demo.section_demo .demo-pin > .score .segs i.on{
-  background-color:#8A96FF;
-  animation:wk-seg .45s var(--ease);
-}
-@keyframes wk-seg{
-  0%{transform:scaleY(.4);opacity:.4}
-  55%{transform:scaleY(1.5)}
-  100%{transform:scaleY(1);opacity:1}
-}
-/* hotovo: celý ukazatel zezelená a nadskočí */
-#demo.section_demo .demo-pin > .score.done{
-  background-color:#17824A;
-  box-shadow:0 22px 60px -18px rgba(23,130,74,.65);
-  animation:wk-done .6s var(--ease);
-}
-#demo.section_demo .demo-pin > .score.done .segs i.on{background-color:#FFFFFF}
-@keyframes wk-done{
-  0%{transform:translateX(-50%) scale(1)}
-  40%{transform:translateX(-50%) scale(1.08)}
-  100%{transform:translateX(-50%) scale(1)}
-}
-
-@media (max-width:760px){
-  /* na mobilu zůstává dole, tam nepřekáží a je pod palcem */
-  #demo.section_demo .demo-pin > .score{
-    top:auto;bottom:1rem;position:fixed;
-    opacity:0;pointer-events:none;transition:opacity .3s;
-  }
-  #demo.section_demo.vis .demo-pin > .score{opacity:1;pointer-events:auto}
-  @keyframes wk-done{
-    0%{transform:translateX(-50%) scale(1)}
-    40%{transform:translateX(-50%) scale(1.06)}
-    100%{transform:translateX(-50%) scale(1)}
-  }
-}
-
-@media (prefers-reduced-motion:reduce){
-  #demo.section_demo .demo-pin > .score,
-  #demo.section_demo .demo-pin > .score .segs i{animation:none!important}
-}
-
-/* Ukazatel je jen jeden, ten v .demo-pin. Kopie uvnitř telefonu by byla duplicita. */
-#demo.section_demo .phone .score{display:none!important}
+   Veškeré styly ukázky žijí v repu v site/webflow/demo.css a nasazují se
+   uvnitř HTML Embedu. Tady zůstává jen pojistka proti kolizi tříd:
+   .tag už Webflow používá pro štítky u projektů a vnucovala štítkům
+   v ukázce nowrap, rámeček a verzálky, takže text z bubliny vytékal.
+   Uvnitř ukázky se proto jmenují .dtag — tohle je druhý zámek. */
+#demo.section_demo .fx .dtag{
+  white-space:normal;border:0;text-transform:none;letter-spacing:0}
 
 /* ══════════ 5. KONTAKT ══════════
    Nadpis vlevo, formulář vpravo. Nadpis má pevné zalomení na tři řádky,
