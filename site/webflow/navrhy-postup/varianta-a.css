@@ -1,0 +1,158 @@
+/* ══════════════════════════════════════════════════════════════
+   POSTUP — varianta A „Rejstřík"
+   Sazba místo grafu. Pět řádků pod sebou, vlasové linky, jedna
+   modrá v pěti tintách. Všechen text je vidět hned, nic se
+   neschovává za najetí myší.
+   KAM TO PATŘÍ: na konec souboru site/webflow/page-late.css, tedy do
+   HTML Embedu na konci stránky. Do hlavičky ne — tam je strop 10 000
+   znaků a page.css z něj má 10 411. Sekce Postup je pod ohybem, takže
+   je pozdní embed přesně to místo, kam podle README patří.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ---------- 1. co odchází ----------
+   Cena a „Výstup: …". Tohle je rychlá záplata, aby to bylo pryč
+   hned. Ve Webflow ta pole rovnou smaž, jinak zůstanou v HTML
+   a cenu si dál přečte kdokoli ve zdrojáku i Google. */
+#postup .process_price,
+#postup .process_pop-out{display:none!important}
+
+/* ---------- 2. jedna barva v pěti tintách ----------
+   Dnešní pruh je duha: světle modrá, lila, modrá, černá, zelená.
+   Zelená na konci navíc čte jako „hotovo/OK", což je významová
+   barva, ne fáze. Tady je to jedna modrá, která se cestou
+   zesiluje — bledá na začátku, plná značková na spuštění. */
+#postup .process_block.is-b1{--tint:#D8DCFB}
+#postup .process_block.is-b2{--tint:#B7BEF7}
+#postup .process_block.is-b3{--tint:#8A96FF}
+#postup .process_block.is-b4{--tint:#4A57EE}
+#postup .process_block.is-b5{--tint:#1D2BE8}
+
+/* ---------- 3. pravítko osmi týdnů ----------
+   Popisky týdnů zůstávají, ale pod nimi je teď šestipixelový pruh
+   s délkou všech pěti fází. Je to pozadí, ne prvky — do struktury
+   stránky se kvůli tomu nesahá. */
+#postup .process_axis{
+  border-bottom:0;
+  padding-bottom:1.5rem;
+  background-image:linear-gradient(90deg,
+    #D8DCFB 0 calc(12.5% - 3px), transparent calc(12.5% - 3px) 12.5%,
+    #B7BEF7 12.5% calc(25% - 3px),  transparent calc(25% - 3px)  25%,
+    #8A96FF 25%   calc(50% - 3px),  transparent calc(50% - 3px)  50%,
+    #4A57EE 50%   calc(87.5% - 3px),transparent calc(87.5% - 3px) 87.5%,
+    #1D2BE8 87.5% 100%);
+  background-repeat:no-repeat;
+  background-size:100% .375rem;
+  background-position:0 100%;
+}
+#postup .process_axis-item{
+  border-left:1px solid var(--line);
+  padding-left:.5rem;
+  line-height:1.2;
+}
+
+/* ---------- 4. seznam fází ----------
+   .process_track přestává být pruh s absolutně umístěnými bloky
+   a je z něj obyčejný seznam řádků oddělených vlasovkou. */
+#postup .process_track{
+  position:static;
+  display:block;
+  height:auto;
+  margin:2.25rem 0 0;
+  border-top:1px solid var(--line);
+}
+
+/* Bublina přestane být bublinou: display:contents ji zruší jako
+   krabici a její tři texty se stanou přímo poli mřížky řádku.
+   visibility/opacity jsou tu proto, že v demo.css bublinu schovává
+   starší pravidlo — až ho smažeš, můžou zmizet i odsud. */
+#postup .process_track .process_pop{
+  display:contents;
+  visibility:visible;
+  opacity:1;
+}
+
+#postup .process_track .process_block{
+  position:static;
+  left:auto;right:auto;
+  width:auto;height:auto;
+  background:none;
+  border-radius:0;
+  border-bottom:1px solid var(--line);
+  cursor:default;
+  display:grid;
+  grid-template-columns:10rem minmax(7rem,13rem) minmax(0,1fr);
+  column-gap:clamp(1.25rem,2.5vw,2.5rem);
+  row-gap:.25rem;
+  align-items:start;
+  padding:clamp(1.25rem,2vw,1.75rem) .5rem;
+  font-family:var(--sans);
+  font-size:1rem;
+  font-weight:400;
+  letter-spacing:0;
+  color:var(--ink);
+  transition:background-color .2s cubic-bezier(.2,.8,.2,1);
+}
+/* najetí myší je tichý podklad, žádný pohyb ani stín */
+#postup .process_track .process_block:hover{background-color:rgba(255,255,255,.65)}
+#postup .process_track .process_block:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+
+/* levý sloupec: kdy a jak dlouho, monospace, čtverec v barvě fáze */
+#postup .process_pop-when{
+  grid-column:1;grid-row:1;
+  display:flex;align-items:center;gap:.5rem;
+  margin:0;padding-top:.4rem;
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink);opacity:1;
+}
+#postup .process_pop-when::before{
+  content:"";flex:0 0 auto;width:.5rem;height:.5rem;border-radius:2px;
+  background-color:var(--tint);
+}
+#postup .process_block-weeks{
+  grid-column:1;grid-row:2;
+  margin-left:0;padding-left:1rem;
+  font-family:var(--mono);font-size:.71875rem;color:var(--mute);
+}
+
+/* prostřední sloupec: název fáze */
+#postup .process_block-name{
+  grid-column:2;grid-row:1 / span 2;
+  font-family:var(--display);
+  font-size:clamp(1.25rem,1.8vw,1.5rem);
+  font-weight:500;letter-spacing:-.02em;line-height:1.15;
+  color:var(--ink);
+}
+
+/* pravý sloupec: věta a odstavec */
+#postup .process_pop-title{
+  grid-column:3;grid-row:1;
+  font-family:var(--display);font-size:1.0625rem;font-weight:500;
+  letter-spacing:-.01em;line-height:1.35;margin:0;color:var(--ink);
+}
+#postup .process_pop-text{
+  grid-column:3;grid-row:2;
+  max-width:62ch;margin-top:.25rem;
+  font-size:.9375rem;line-height:1.55;color:var(--ink2);opacity:1;
+}
+
+/* ---------- 5. užší obrazovky ----------
+   Webflow schovává pravítko už pod 991 px. Na tabletu je na něj
+   ale místa dost, tak ho vracíme a mizí až na mobilu. */
+@media screen and (max-width:991px){
+  #postup .process_axis{display:grid}
+  #postup .process_track .process_block{
+    grid-template-columns:minmax(0,1fr) auto;
+    row-gap:.5rem;
+    padding:1.25rem .25rem;
+  }
+  #postup .process_pop-when{grid-column:1;grid-row:1}
+  #postup .process_block-weeks{grid-column:2;grid-row:1;justify-self:end;padding-left:0;padding-top:.4rem}
+  #postup .process_block-name{grid-column:1 / -1;grid-row:2}
+  #postup .process_pop-title{grid-column:1 / -1;grid-row:3}
+  #postup .process_pop-text{grid-column:1 / -1;grid-row:4;max-width:66ch}
+}
+@media screen and (max-width:767px){
+  #postup .process_axis{display:none}
+  #postup .process_track{margin-top:1.5rem}
+  #postup .process_block-name{font-size:1.375rem}
+}

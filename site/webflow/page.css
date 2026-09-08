@@ -36,6 +36,10 @@
   padding-top:clamp(3rem,8vh,5.5rem);
   padding-bottom:clamp(3rem,7vh,4.5rem);
   isolation:isolate;
+  /* Záře jsou 544 px široké a přesahují doprava. Na mobilu kvůli nim
+     prohlížeč roztáhl rozvržení na 521 px a celou stránku zmenšil.
+     clip ořízne jen vodorovně a nedělá z hera posuvnou oblast. */
+  overflow-x:clip;
 }
 #hero > .padding-global{width:100%}
 #hero .padding-section-large{padding-top:0;padding-bottom:0}
@@ -94,14 +98,12 @@
 
 #brzdi .problem_pill,#brzdi .problem_pill::before,
 #brzdi .problem_avatar,
-#brzdi .problem_curve-rise,#brzdi .problem_curve-fall,#brzdi .problem_curve-label{
+#brzdi .problem_curve-label{
   animation-play-state:paused;
 }
 #brzdi .problem_card:hover .problem_pill,
 #brzdi .problem_card:hover .problem_pill::before,
 #brzdi .problem_card:hover .problem_avatar,
-#brzdi .problem_card:hover .problem_curve-rise,
-#brzdi .problem_card:hover .problem_curve-fall,
 #brzdi .problem_card:hover .problem_curve-label,#brzdi .problem_card:hover .wk-krivka path{animation-play-state:running}
 
 /* na dotyku se nedá najet myší, tak se to rozjede, jakmile je karta vidět */
@@ -109,8 +111,6 @@
   #brzdi .problem_card.is-in .problem_pill,
   #brzdi .problem_card.is-in .problem_pill::before,
   #brzdi .problem_card.is-in .problem_avatar,
-  #brzdi .problem_card.is-in .problem_curve-rise,
-  #brzdi .problem_card.is-in .problem_curve-fall,
   #brzdi .problem_card.is-in .problem_curve-label,#brzdi .problem_card.is-in .wk-krivka path{animation-play-state:running}
 }
 
@@ -143,30 +143,18 @@
   40%,60%{opacity:1;border-style:solid;transform:translate(0,calc(-50% - 4px))}
 }
 
-/* Křivka je ve Webflow poskládaná z divů, ne z SVG, takže stroke-dasharray
-   nepomůže. Kreslení nahradíme odhalováním zleva přes clip-path. */
 /* Křivka byla poskládaná z divů se zaoblenými rohy, takže místo vzestupu
    a pádu kreslila V. Skript na její místo vloží stejné SVG jako prototyp v8,
    původní tři divy schováme. */
-#brzdi .problem_visual.is-curve .problem_curve-rise,
-#brzdi .problem_visual.is-curve .problem_curve-fall,
-#brzdi .problem_visual.is-curve .problem_curve-base{display:none}
+#brzdi .is-curve .problem_curve-rise,
+#brzdi .is-curve .problem_curve-fall,
+#brzdi .is-curve .problem_curve-base{display:none}
 #brzdi .wk-krivka{position:absolute;inset:0;width:100%;height:100%}
 #brzdi .wk-krivka .ln{stroke-dasharray:300;stroke-dashoffset:0;animation:wk-draw2 3s var(--ease) infinite}
 #brzdi .wk-krivka .drop{stroke-dasharray:6 4;animation:wk-dash 1.2s linear infinite}
 @keyframes wk-draw2{0%{stroke-dashoffset:300}45%,100%{stroke-dashoffset:0}}
 @keyframes wk-dash{to{stroke-dashoffset:-20}}
-#brzdi .problem_curve-rise{animation:wk-draw 3.2s var(--ease) infinite}
-#brzdi .problem_curve-fall{animation:wk-fade 3.2s var(--ease) infinite}
 #brzdi .problem_curve-label{animation:wk-label 3.2s var(--ease) infinite}
-@keyframes wk-draw{
-  0%{clip-path:inset(0 100% 0 0)}
-  40%,100%{clip-path:inset(0 0 0 0)}
-}
-@keyframes wk-fade{
-  0%,38%{opacity:0;transform:translateY(-6px)}
-  62%,100%{opacity:1;transform:none}
-}
 @keyframes wk-label{
   0%,30%{opacity:0}
   45%,100%{opacity:1}
@@ -174,8 +162,7 @@
 
 @media (prefers-reduced-motion:reduce){
   #brzdi .problem_pill,#brzdi .problem_pill::before,#brzdi .problem_avatar,
-  #brzdi .problem_curve-rise,#brzdi .problem_curve-fall,
-  #brzdi .problem_curve-label{animation:none!important;clip-path:none!important;opacity:1!important}
+    #brzdi .problem_curve-label{animation:none!important;clip-path:none!important;opacity:1!important}
   #brzdi .problem_card:hover{transform:none}
 }
 
@@ -187,6 +174,34 @@
    Uvnitř ukázky se proto jmenují .dtag — tohle je druhý zámek. */
 #demo.section_demo .fx .dtag{
   white-space:normal;border:0;text-transform:none;letter-spacing:0}
+
+/* ══════════ 4b. POSTUP NA UZKYCH SIRKACH ══════════
+   Bublinu s detailem zapíná demo.css (jde do embedu ukázky), jenže tam
+   nebyla omezená breakpointem. Od 991 px níž Webflow bublinu přepne do
+   toku, takže schovaná přes visibility jen držela prázdné místo a bloky
+   vypadaly jako pět prázdných barevných obdélníků.
+
+   Do 767 px se proto blok chová jako harmonika: zavřená bublina se sroluje
+   přes display a blok dostane „+", který se po otevření otočí — stejně jako
+   prototyp v8. Mezi 768 a 991 px je místa dost, takže je text vidět rovnou.
+   Pravidla mají o třídu vyšší specifičnost než ta v embedu, takže vyhrají
+   bez ohledu na pořadí. */
+
+@media screen and (max-width:767px){
+  #postup .process_block .process_pop{display:none}
+  #postup .process_block.is-open .process_pop{display:block}
+  #postup .process_block{padding-right:2.75rem}
+  #postup .process_block::after{
+    content:"+";position:absolute;right:1rem;top:1.125rem;
+    width:1.25rem;height:1.25rem;border:1.5px solid currentColor;border-radius:50%;
+    display:grid;place-items:center;font-family:var(--mono);font-size:.6875rem;
+    line-height:1;opacity:.75;transition:transform .3s var(--ease)}
+  #postup .process_block.is-open::after{transform:rotate(45deg);opacity:1}
+}
+@media screen and (min-width:768px) and (max-width:991px){
+  #postup .process_block .process_pop{opacity:1;visibility:visible;transform:none}
+}
+@media (prefers-reduced-motion:reduce){#postup .process_block::after{transition:none}}
 
 /* ══════════ 5. KONTAKT ══════════
    Nadpis vlevo, formulář vpravo. Nadpis má pevné zalomení na tři řádky,
@@ -222,6 +237,8 @@
   transition:border-color .15s,background-color .15s;
 }
 #kontakt .w-form textarea{min-height:7rem;resize:vertical}
+/* Na dotyku je táhlo k ničemu a v rohu pole je vidět jako smítko. */
+@media (hover:none){#kontakt .w-form textarea{resize:none}}
 #kontakt .w-form input:focus,#kontakt .w-form textarea:focus{
   outline:none;border-color:#8A96FF;background-color:rgba(255,255,255,.07);
 }
@@ -245,6 +262,7 @@
   #kontakt .contact_actions{margin-top:1.25rem}
 }
 @media screen and (max-width:767px){
-  #kontakt .contact_heading br{display:none}
+  /* Zalomení nadpisu drží i na mobilu: tři řádky se do 393 px vejdou
+     i s nejdelším rotujícím slovem. Bez <br> by chyběla mezera za čárkou. */
   #kontakt .contact_rot{white-space:normal}
 }
