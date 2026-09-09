@@ -10,6 +10,7 @@
    ══════════════════════════════════════════════════════════════ */
 
 /* ---------- proměnné, ať se to čte stejně jako v prototypu ---------- */
+/* @global promenne */
 #obsah, .footer_component{
   --bg:#ECEFF3;--card:#F7F8FA;--ink:#101321;--ink2:#3A3F52;--mute:#646A7E;
   --line:#CDD2DC;--line2:#AEB5C4;--blue:#1D2BE8;--blue2:#1523B8;
@@ -20,6 +21,7 @@
   --ease:cubic-bezier(.2,.8,.2,1);
   --hdr:4rem;
 }
+/* @endglobal */
 
 /* ---------- sekce Tým je skrytá ---------- */
 #tym{display:none!important}
@@ -79,6 +81,7 @@
   #kontakt .padding-section-large{padding-top:3.5rem;padding-bottom:3.5rem}
 }
 
+/* @global odhalovani */
 /* ══════════ 2. ODHALOVÁNÍ PŘI SCROLLU ══════════
    Stejná mechanika jako prototyp: prvek startuje níž a průhledný,
    skript mu přidá .is-in. Bez skriptu je vidět všechno, takže se
@@ -97,6 +100,7 @@
 @media (prefers-reduced-motion:reduce){
   .wk-js .wk-rv{opacity:1;transform:none;transition:none}
 }
+/* @endglobal */
 
 /* ══════════ 3. KARTY V SEKCI BRZDÍ ══════════
    Kresby v kartách jsou v prototypu animované a rozjedou se při
@@ -189,6 +193,7 @@
 #demo.section_demo .fx .dtag{
   white-space:normal;border:0;text-transform:none;letter-spacing:0}
 
+/* @global kontakt */
 /* ══════════ 5. KONTAKT ══════════
    Nadpis vlevo, formulář vpravo. Nadpis má pevné zalomení na tři řádky,
    na mobilu se zalomení ruší, protože se dlouhý řádek nevejde. */
@@ -269,3 +274,5 @@
      i s nejdelším rotujícím slovem. Bez <br> by chyběla mezera za čárkou. */
   #kontakt .contact_rot{white-space:normal}
 }
+/* @endglobal */
+

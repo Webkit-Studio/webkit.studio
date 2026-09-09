@@ -117,6 +117,7 @@ var stop=function(){pause=true;clearTimeout(rt);lis.forEach(function(l){l.classL
 cap.addEventListener('pointerenter',stop);cap.addEventListener('pointerdown',stop);
 cap.addEventListener('pointerleave',function(){if(!fine)return;clearTimeout(rt);rt=setTimeout(function(){pause=false;beh=0;},800);});}
 
+/* @global sdilene-bloky */
 /* ---------- kontakt: hlasky, ktere se samy vypisuji do pole Co resite ----------
    Stejne vety jako v prototypu v8. Placeholder zustava jako zaloha,
    kdyby tenhle kus nedobehl; CSS ho schova az kdyz obalka vznikne. */
@@ -167,6 +168,9 @@ document.documentElement.classList.add('wk-js');
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;e.target.classList.add('is-in');io.unobserve(e.target);});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});
 prvky.forEach(function(el){io.observe(el);});
 setTimeout(function(){prvky.forEach(function(el){el.classList.add('is-in');});},3000);}}
+/* @endglobal */
+
+
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();

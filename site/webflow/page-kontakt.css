@@ -82,6 +82,7 @@
 }
 @media screen and (max-width:767px){#kontakt .contact_rot{white-space:normal}}
 
+/* @global faq */
 /* ---------- 5. FAQ ----------
    Sekce stojí na nativním <details>/<summary>, žádný JavaScript. Bez
    téhle části ale vypadala jako obyčejný seznam — nic neříkalo, že se
@@ -101,3 +102,5 @@
 #faq .faq_q:hover{color:var(--blue)}
 #faq .faq_q:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
 @media (prefers-reduced-motion:reduce){#faq .faq_q::after{transition:none}}
+/* @endglobal */
+
