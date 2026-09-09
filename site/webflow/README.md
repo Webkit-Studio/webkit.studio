@@ -14,6 +14,23 @@ ne ručním kopírováním.
 | `analytika/2-cookiebar.js` | registrovaný skript `wkcookiebar`, patička |
 | `analytika/3-forms.js` | registrovaný skript `wkformsnames`, patička |
 
+## Co je v hlavičce stránky kromě CSS
+
+Před `<style>` stojí na každé veřejné stránce dva řádky, které v repu nemají
+vlastní soubor, protože to není kód, ale metadata:
+
+```html
+<link rel="canonical" href="https://webkit.studio/">
+<meta property="og:url" content="https://webkit.studio/">
+```
+
+Webflow ani jedno negeneruje samo. Bez canonical by se `?utm_source=linkedin`
+mohl zaindexovat jako druhá adresa téhle stránky — a odkazy z LinkedInu UTM
+parametry nesou skoro vždycky. Na `/osobni-udaje` je totéž s její adresou.
+
+Když se hlavička přenasazuje, musí jít nahoru **i tyhle dva řádky** — přepisuje
+se celý blok najednou.
+
 ## Proč embed a ne vlastní kód stránky
 
 Webflow Data API odmítá `<script>` ve volném kódu stránky i webu (HTTP 406).
