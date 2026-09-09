@@ -81,3 +81,23 @@
   #kontakt .contact_actions{margin-top:1.25rem}
 }
 @media screen and (max-width:767px){#kontakt .contact_rot{white-space:normal}}
+
+/* ---------- 5. FAQ ----------
+   Sekce stojí na nativním <details>/<summary>, žádný JavaScript. Bez
+   téhle části ale vypadala jako obyčejný seznam — nic neříkalo, že se
+   řádky dají rozkliknout. Šipka je jen border dvou stran, ne ikona. */
+#faq .faq_q{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  cursor:pointer;list-style:none;transition:color .2s;
+}
+#faq .faq_q::-webkit-details-marker{display:none}
+#faq .faq_q::after{
+  content:"";flex:0 0 auto;width:.5rem;height:.5rem;margin-right:.375rem;
+  border-right:2px solid var(--blue);border-bottom:2px solid var(--blue);
+  transform:translateY(-.15rem) rotate(45deg);
+  transition:transform .25s var(--ease);
+}
+#faq details[open] .faq_q::after{transform:translateY(.05rem) rotate(225deg)}
+#faq .faq_q:hover{color:var(--blue)}
+#faq .faq_q:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
+@media (prefers-reduced-motion:reduce){#faq .faq_q::after{transition:none}}
