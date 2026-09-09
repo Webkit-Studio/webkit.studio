@@ -6,6 +6,34 @@ var q=function(s,r){return (r||document).querySelector(s)},qa=function(s,r){retu
 var rm=matchMedia('(prefers-reduced-motion: reduce)').matches,fine=matchMedia('(hover:hover) and (pointer:fine)').matches;
 var cl=function(v,a,b){return Math.max(a,Math.min(b,v))},lp=function(a,b,t){return a+(b-a)*t},eo=function(t){return 1-Math.pow(1-t,3)};
 
+/* ---------- hero: slova reaguji na kurzor ----------
+   Prototyp v8 mel v nadpisu magneticky efekt: cim bliz je mys, tim je
+   slovo tucnejsi, uzsi a nakonec modre. Do Webflow to nepreslo, protoze
+   nadpis je jen holy text. Slova tedy obalime tady a pak uz jen menime
+   font-variation-settings. Bricolage Grotesque je promenny rez, takze
+   se nic nedonacita.
+   Na dotyku a pri prefers-reduced-motion se to nespusti vubec. */
+var hnad=q('#hero .hero_title');
+if(hnad&&fine&&!rm&&!q('.w',hnad)){
+var slova=hnad.textContent.trim().split(/\s+/);
+hnad.textContent='';
+slova.forEach(function(w,i){
+  var sp=document.createElement('span');sp.className='w';sp.textContent=w;
+  hnad.appendChild(sp);
+  if(i<slova.length-1)hnad.appendChild(document.createTextNode(' '));
+});
+var ws=qa('.w',hnad),vidi=true,mx=-9999,my=-9999,ceka=false;
+if(window.IntersectionObserver){new IntersectionObserver(function(e){vidi=e[0].isIntersecting;}).observe(hnad);}
+var kresli=function(){ceka=false;if(!vidi)return;
+ws.forEach(function(w){var r=w.getBoundingClientRect();
+var d=Math.hypot(mx-(r.left+r.width/2),my-(r.top+r.height/2)),k=Math.max(0,1-d/380);
+w.style.fontVariationSettings='"opsz" 96,"wdth" '+(100-k*20).toFixed(1)+',"wght" '+(300+k*500).toFixed(0);
+w.style.color=k>0.55?'#1D2BE8':'';});};
+addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY;
+if(!ceka){ceka=true;requestAnimationFrame(kresli);}},{passive:true});
+addEventListener('pointerleave',function(){mx=-9999;my=-9999;kresli();});
+}
+
 qa('#brzdi .problem_visual').forEach(function(v){v.setAttribute('aria-hidden','true');});
 
 /* Krivka ve treti karte byla poskladana z divu, takze kreslila V misto
