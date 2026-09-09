@@ -256,7 +256,13 @@
   font-weight:600;cursor:pointer;
 }
 #kontakt .w-form input[type=submit]:hover{background-color:#F1F2F6;border-color:#F1F2F6}
-#kontakt .w-form-done{background-color:rgba(23,130,74,.18);border:1px solid #17824A}
+/* Stav po odeslání. Zelený rámeček vypadal jako systémová hláška
+   z administrace, ne jako odpověď od člověka. Teď je to klidná plocha
+   ve stejné rodině jako formulář, nad kterou stojí kroužek s fajfkou. */
+#kontakt .w-form-done{
+  background-color:rgba(138,150,255,.06);
+  border:1px solid rgba(138,150,255,.22);
+}
 #kontakt .w-form-fail{background-color:rgba(224,72,63,.16);border:1px solid #E0483F}
 #kontakt .w-form-done,#kontakt .w-form-fail{
   border-radius:.75rem;padding:1rem 1.125rem;color:#F1F2F6;font-size:.9375rem;
