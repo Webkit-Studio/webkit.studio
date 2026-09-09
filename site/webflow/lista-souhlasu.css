@@ -1,0 +1,42 @@
+/* ══════════════════════════════════════════════════════════════
+   Webkit.Studio — lišta se souhlasem s cookies
+   Celé je to globální, lišta je na každé stránce. Markup vyrábí
+   registrovaný skript wkcookiebar, tohle je jen jeho vzhled.
+   ══════════════════════════════════════════════════════════════ */
+
+/* @global lista-souhlasu */
+.wk-ck{
+  position:fixed;left:1rem;right:auto;bottom:1rem;z-index:9999;
+  width:calc(100% - 2rem);max-width:25rem;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  gap:1rem;padding:1.125rem 1.25rem;
+  border:1px solid #CDD2DC;border-radius:14px;
+  background-color:#FFFFFF;color:#3A3F52;
+  font-family:"Instrument Sans",system-ui,sans-serif;
+  font-size:.9375rem;line-height:1.5;
+  box-shadow:0 30px 60px -30px rgba(16,19,33,.45);
+  opacity:0;transform:translateY(12px);
+  transition:opacity .3s,transform .3s;
+}
+.wk-ck.in{opacity:1;transform:none}
+.wk-ck-t{flex:1 1 16rem;min-width:0}
+.wk-ck-t b{color:#101321}
+.wk-ck-t a{color:#1D2BE8}
+.wk-ck-a{display:flex;gap:.625rem;flex:0 0 auto}
+.wk-ck button{
+  font:inherit;font-weight:600;cursor:pointer;
+  min-height:2.75rem;padding:.625rem 1.125rem;
+  border-radius:12px;border:1px solid #AEB5C4;
+  background-color:transparent;color:#101321;
+}
+.wk-ck button:hover{border-color:#101321}
+.wk-ck button.ok{background-color:#1D2BE8;border-color:#1D2BE8;color:#FFFFFF}
+.wk-ck button.ok:hover{background-color:#1523B8;border-color:#1523B8}
+.wk-ck button:focus-visible{outline:2px solid #101321;outline-offset:3px}
+@media (max-width:600px){
+  .wk-ck{left:.75rem;right:.75rem;bottom:.75rem;width:auto;max-width:none;padding:1rem}
+  .wk-ck-a{width:100%}
+  .wk-ck button{flex:1 1 auto}
+}
+@media (prefers-reduced-motion:reduce){.wk-ck{transition:none}}
+/* @endglobal */

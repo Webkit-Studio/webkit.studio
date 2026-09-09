@@ -74,10 +74,11 @@ def main():
     g1, home_css   = rozdel(nacti("page.css"))
     g2, home_late  = rozdel(nacti("page-late.css"))
     g3, kontakt_css= rozdel(nacti("page-kontakt.css"))
+    g4, _          = rozdel(nacti("lista-souhlasu.css"))
     gjs, home_js   = rozdel(nacti("page-home.js"))
 
     vystupy = {
-        "global.css": min_css(g1 + "\n" + g2 + "\n" + g3),
+        "global.css": min_css(g4 + "\n" + g1 + "\n" + g2 + "\n" + g3),
         "home.css":   min_css(home_css + "\n" + home_late),
         "kontakt.css": min_css(kontakt_css),
         "global.js":  min_js(zabal_js(gjs,  "globální skript webu", "__wkGlobal")),
