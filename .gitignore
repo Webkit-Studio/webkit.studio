@@ -1,0 +1,10 @@
+# Repo je veřejné. Nic z tohohle sem nesmí.
+.env
+.env.*
+.dev.vars
+*.pem
+*.key
+secrets/
+scratchpad/
+.DS_Store
+node_modules/

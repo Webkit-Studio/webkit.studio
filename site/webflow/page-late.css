@@ -1,0 +1,256 @@
+/* Webkit.Studio — styly, které nejsou vidět na první obrazovce.
+   Nasazují se v HTML Embedu na konci stránky, spolu se skriptem.
+   Důvod: vlastní kód stránky má strop 10 000 znaků a hlavička ho vyčerpala.
+   Tady je limit jen na velikost embedu, takže se sem stěhuje všechno,
+   co je pod ohybem: záře pod výzvou, kontakt a technická lišta v patičce. */
+
+/* Záře pod výzvou. Bez pseudoprvku: ten by se zápornou vrstvou zmizel
+   za vlastním pozadím lišty. Velký měkký barevný stín dělá totéž a nikde
+   se nepere o vrstvení. Když je myš na tlačítku, záře pulzuje. */
+#brzdi .ctabar{transition:box-shadow .45s var(--ease),transform .45s var(--ease)}
+#brzdi .ctabar:hover{
+  transform:translateY(-2px);
+  box-shadow:0 24px 64px -28px rgba(29,43,232,.8),0 0 0 1px rgba(138,150,255,.35)}
+#brzdi .ctabar:has(.button:hover){transform:translateY(-3px);animation:wk-glow 2s ease-in-out infinite}
+@keyframes wk-glow{
+  0%,100%{box-shadow:0 26px 70px -28px rgba(29,43,232,.8),0 0 0 1px rgba(138,150,255,.4)}
+  50%{box-shadow:0 36px 100px -24px rgba(29,43,232,1),0 0 0 1px rgba(138,150,255,.8)}}
+@media (prefers-reduced-motion:reduce){
+  #brzdi .ctabar,#brzdi .ctabar:hover,#brzdi .ctabar:has(.button:hover){animation:none;transform:none}}
+
+/* @global kontakt-a-paticka */
+/* Místo tlačítka rychlý kontakt. */
+#kontakt .contact_quick{display:flex;flex-direction:column;gap:.375rem}
+#kontakt .contact_quick-label{
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.09em;
+  text-transform:uppercase;color:rgba(241,242,246,.62)}
+#kontakt .contact_quick-item{
+  font-family:var(--display);font-size:clamp(1.25rem,2.2vw,1.75rem);line-height:1.2;
+  color:#F1F2F6;text-decoration:none;width:max-content;
+  border-bottom:1px solid rgba(138,150,255,.45);transition:color .2s,border-color .2s}
+#kontakt .contact_quick-item:hover{color:#8A96FF;border-bottom-color:#8A96FF}
+
+/* Souhlas pod formulářem. */
+#kontakt .contact_gdpr{margin-top:.25rem;font-size:.8125rem;line-height:1.5;color:rgba(241,242,246,.6)}
+#kontakt .contact_gdpr-link{color:#8A96FF;text-decoration:underline;text-underline-offset:2px}
+
+/* Potvrzení o odeslání. */
+#kontakt .contact_done{display:flex;flex-direction:column;align-items:flex-start;gap:.625rem}
+#kontakt .contact_done-title{
+  font-family:var(--display);font-size:clamp(1.375rem,2.4vw,1.875rem);line-height:1.15;color:#F1F2F6}
+#kontakt .contact_done-text{font-size:.9375rem;line-height:1.55;color:rgba(241,242,246,.75)}
+#kontakt .contact_done-cta{
+  margin-top:.375rem;display:inline-flex;align-items:center;min-height:2.75rem;
+  padding:.625rem 1.25rem;border-radius:.75rem;background-color:#FFFFFF;color:#101321;
+  font-weight:600;text-decoration:none;transition:background-color .2s}
+#kontakt .contact_done-cta:hover{background-color:#F1F2F6}
+
+/* Hlášky, které se samy vypisují do pole Co řešíte. Skript kolem pole obalí
+   .wk-tawrap; dokud to neudělá, zůstává vidět obyčejný placeholder. */
+#kontakt .wk-tawrap{position:relative}
+#kontakt .wk-tawrap textarea::placeholder{color:transparent}
+#kontakt .wk-ghost{
+  position:absolute;left:1rem;right:1rem;top:.875rem;pointer-events:none;
+  color:rgba(241,242,246,.42);font-size:1rem;line-height:1.5}
+#kontakt .wk-ghost::after{
+  content:"";display:inline-block;width:2px;height:1em;background:#8A96FF;
+  vertical-align:-.15em;margin-left:2px;animation:wk-caret2 1s steps(2) infinite}
+@keyframes wk-caret2{50%{opacity:0}}
+#kontakt .wk-tawrap.typing .wk-ghost{display:none}
+@media (prefers-reduced-motion:reduce){#kontakt .wk-ghost::after{animation:none}}
+
+/* Patička: druhá, technická lišta. */
+/* .footer_inner je flex s wrapem, takže lišta potřebuje width:100 %,
+   jinak se poskládá jako čtvrtý sloupec vedle IČO. Šířka je nastavená
+   přímo na třídě ve Webflow, ať je vidět v Designeru. */
+.footer_legal{
+  display:flex;flex-wrap:wrap;align-items:center;gap:1rem;width:100%;
+  margin-top:1.25rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.1)}
+.footer_legal-link{
+  font-family:var(--mono);font-size:.75rem;letter-spacing:.04em;color:inherit;opacity:.6;
+  background:none;border:0;padding:0;cursor:pointer;text-decoration:none;font-weight:400;
+  transition:opacity .2s}
+.footer_legal-link:hover{opacity:1;text-decoration:underline}
+.footer_legal-link:focus-visible{outline:2px solid currentColor;outline-offset:3px;opacity:1}
+/* @endglobal */
+
+/* ══════════ POSTUP: SVISLÁ DRÁHA ══════════
+   Osm týdnů stojí na výšku. Vlevo pravítko týdnů, vpravo dráha, kde
+   VÝŠKA úseku odpovídá délce fáze — osm týdnů tak není obrázek, ale
+   vzdálenost, kterou čtenář projede. Text má plnou šířku řádku a nic
+   se neschovává za najetí myší.
+
+   Pozor na demo.css: tam pořád žije starší pravidlo
+   #postup .process_pop{opacity:0;visibility:hidden}. Neruším ho, jen
+   přebíjím o třídu vyšší specifičností — visibility se dědí, takže
+   bez toho by texty uvnitř display:contents zmizely. */
+
+/* ---------- 1. výška jednoho týdne a barvy fází ----------
+   --u je jediné číslo, kterým se celá sekce zkracuje a prodlužuje.
+   8rem je minimum, do kterého se vejde text nejkratší fáze;
+   celá dráha je pak 8× tolik, tedy 64rem. */
+#postup{--u:8rem}
+#postup .process_block.is-b1{--tint:#8A96FF}
+#postup .process_block.is-b2{--tint:#6E7BFB}
+#postup .process_block.is-b3{--tint:#4A57EE}
+#postup .process_block.is-b4{--tint:#2A38EA}
+#postup .process_block.is-b5{--tint:#1D2BE8}
+
+/* ---------- 2. dva sloupce: pravítko a dráha ----------
+   Nadpis, osa i pruh jsou ve Webflow sourozenci uvnitř
+   .padding-section-medium, takže stačí udělat mřížku z jejich
+   společného rodiče. Do struktury stránky se nesahá. */
+#postup .padding-section-medium{
+  display:grid;
+  grid-template-columns:7rem minmax(0,1fr);
+  column-gap:clamp(1.5rem,3vw,2.5rem);
+}
+#postup .process_heading{grid-column:1 / -1}
+#postup .process_axis{grid-column:1;grid-row:2}
+#postup .process_track{grid-column:2;grid-row:2}
+
+/* pravítko: osm řádků po jednom týdnu, přesně naproti úsekům */
+#postup .process_axis{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-rows:repeat(8,var(--u));
+  border-bottom:0;
+  padding-bottom:0;
+  text-align:right;
+}
+#postup .process_axis-item{
+  border-top:1px solid var(--line);
+  padding:.5rem .875rem 0 0;
+  line-height:1.2;
+}
+
+/* ---------- 3. dráha ----------
+   Kolejnice není zvláštní prvek — je to levý okraj úseků. Proto
+   se sama zbarvuje podle fáze a sama má správnou délku.
+   Řádky: 1 + 1 + 2 + 3 + 1 týden = osm. */
+#postup .process_track{
+  position:static;
+  height:auto;
+  margin:0;
+  display:grid;
+  grid-template-rows:var(--u) var(--u) calc(var(--u) * 2) calc(var(--u) * 3) var(--u);
+}
+
+/* Bublina přestane být bublinou: display:contents zruší její krabici
+   a texty se stanou přímo položkami úseku. Jsou to obyčejné divy
+   bez role, takže se tím nic nerozbije v přístupnosti. */
+#postup .process_track .process_pop{display:contents;visibility:visible;opacity:1}
+
+#postup .process_track .process_block{
+  position:relative;
+  left:auto;right:auto;
+  width:auto;height:auto;
+  display:grid;
+  grid-template-columns:13rem minmax(0,1fr);
+  column-gap:clamp(1.5rem,3vw,2.5rem);
+  align-content:center;
+  align-items:start;
+  border-left:2px solid var(--tint);
+  border-radius:0;
+  background:none;
+  padding:.5rem 0 1.5rem 2rem;
+  cursor:default;
+  /* --sans na #postup neexistuje (je jen uvnitř #demo). */
+  font-family:var(--_typography---font-styles--body);
+  font-size:1rem;
+  font-weight:400;
+  letter-spacing:0;
+  color:var(--ink);
+}
+/* puntík na začátku fáze, v úrovni popisku týdne vlevo */
+#postup .process_track .process_block::before{
+  content:"";
+  position:absolute;
+  left:-.4375rem;
+  top:0;
+  width:.75rem;
+  height:.75rem;
+  border-radius:50%;
+  background-color:var(--tint);
+  box-shadow:0 0 0 .25rem var(--bg);
+}
+/* poslední úsek dráhu zakončí, ať nekončí do prázdna */
+#postup .process_track .process_block.is-b5::after{
+  content:"";
+  position:absolute;
+  left:-.4375rem;
+  bottom:0;
+  width:.75rem;
+  height:.75rem;
+  border-radius:50%;
+  border:2px solid var(--tint);
+  background-color:var(--bg);
+  box-sizing:border-box;
+}
+
+/* levý sloupec úseku: kdy, název, jak dlouho.
+   Na desktopu je „Týden 1" schované — přesně to samé stojí
+   o kousek vlevo na pravítku a dvakrát to tam být nemusí.
+   Na užších obrazovkách, kde pravítko mizí, se zase objeví.
+   Jestli to chceš vidět i na desktopu, smaž ten display:none. */
+#postup .process_pop-when{
+  display:none;
+  grid-column:1;grid-row:1;
+  margin:0 0 .25rem;
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--blue);opacity:1;
+}
+#postup .process_block-name{
+  grid-column:1;grid-row:2;
+  margin-left:0;
+  font-family:var(--display);
+  font-size:clamp(1.5rem,2.2vw,1.75rem);
+  font-weight:500;letter-spacing:-.02em;line-height:1.1;color:var(--ink);
+}
+#postup .process_block-weeks{
+  grid-column:1;grid-row:3;
+  margin:.375rem 0 0;
+  font-family:var(--mono);font-size:.71875rem;color:var(--mute);
+}
+/* pravý sloupec úseku: věta a odstavec */
+#postup .process_pop-title{
+  grid-column:2;grid-row:1;
+  margin:0 0 .5rem;max-width:52ch;
+  font-family:var(--display);font-size:1.125rem;font-weight:500;
+  letter-spacing:-.01em;line-height:1.3;color:var(--ink);
+}
+#postup .process_pop-text{
+  grid-column:2;grid-row:2 / span 2;
+  max-width:58ch;
+  font-size:.9375rem;line-height:1.55;color:var(--ink2);opacity:1;
+}
+
+/* ---------- 4. užší obrazovky ----------
+   Pod 991 px se pravítko nevejde, takže mizí — týdny nese dál
+   každý úsek sám („Týden 1", „Týdny 5 až 7"). Poměrné výšky
+   padají taky, dráha zůstává: svislá časová osa, jak ji každý
+   zná z mobilu. */
+@media screen and (max-width:991px){
+  #postup .padding-section-medium{display:block}
+  #postup .process_axis{display:none}
+  #postup .process_track{
+    display:grid;
+    grid-template-rows:none;
+    grid-auto-rows:min-content;
+  }
+  #postup .process_track .process_block{
+    grid-template-columns:minmax(0,1fr);
+    align-content:start;
+    row-gap:.25rem;
+    padding:0 0 2rem 1.5rem;
+  }
+  #postup .process_pop-when{display:block;grid-column:1;grid-row:1}
+  /* „Týden 1" vlevo uz nese i delku, „1 tyden" vedle nej byla duplicita */
+  #postup .process_block-weeks{display:none}
+  #postup .process_block-name{grid-column:1;grid-row:2;font-size:1.5rem}
+  #postup .process_pop-title{grid-column:1;grid-row:3;margin-top:.375rem}
+  #postup .process_pop-text{grid-column:1;grid-row:4;max-width:none}
+  #postup .process_track .process_block::before{top:.25rem}
+  #postup .process_track .process_block.is-b5{padding-bottom:0}
+  #postup .process_track .process_block.is-b5::after{display:none}
+}

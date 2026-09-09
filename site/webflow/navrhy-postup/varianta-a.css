@@ -1,0 +1,166 @@
+/* ══════════════════════════════════════════════════════════════
+   POSTUP — varianta A „Rejstřík"
+   Sazba místo grafu. Pět řádků pod sebou, vlasové linky, jedna
+   modrá v pěti tintách. Všechen text je vidět hned, nic se
+   neschovává za najetí myší.
+
+   KAM TO PATŘÍ: na konec souboru site/webflow/page-late.css, tedy do
+   HTML Embedu na konci stránky. Do hlavičky ne: nasazený <style> v
+   hlavičce má 7 818 znaků z povolených 10 000, takže tam zbývá 2 182 —
+   a tenhle soubor má po odstranění komentářů 3 771. Nevejde se.
+
+   NEJDŘÍV SMAZAT (jinak tohle nebude fungovat):
+   1. site/webflow/page.css — celý oddíl „4b. POSTUP NA UZKYCH SIRKACH"
+      (řádky 178–204). Zůstane po něm jinak pseudoprvek ::after s „+"
+      na mobilu, který nemá co rozbalovat, a padding-right 2,75rem.
+   2. site/webflow/demo.css — řádky 168–170 (cursor:pointer a obě
+      pravidla pro .process_pop).
+   3. site/webflow/page-home.js — blok „postup: na mobilu se blok
+      po klepnuti rozbali" (proměnná bl a bl.forEach).
+   4. ve Webflow atribut tabindex="0" na .process_block.
+   Všechno v JEDNOM publikování společně s tímhle souborem. Smazat
+   pravidla dřív než nasadíš variantu znamená, že na desktopu zmizí
+   text úplně — Webflow drží .process_pop na opacity:0.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ---------- 1. jedna barva v pěti tintách ----------
+   Dnešní pruh je duha: accent-soft, lilac, accent, neutral-darkest
+   a success. Ta poslední je doslova token pro „úspěch", takže konec
+   procesu čte jako zelené odškrtnutí, ne jako fázi. Tady je to jedna
+   modrá, která se cestou zesiluje. */
+#postup .process_block.is-b1{--tint:#D8DCFB}
+#postup .process_block.is-b2{--tint:#B7BEF7}
+#postup .process_block.is-b3{--tint:#8A96FF}
+#postup .process_block.is-b4{--tint:#4A57EE}
+#postup .process_block.is-b5{--tint:#1D2BE8}
+
+/* ---------- 2. pravítko osmi týdnů ----------
+   Popisky týdnů zůstávají, ale pod nimi je teď šestipixelový pruh
+   s délkou všech pěti fází (1 + 1 + 2 + 3 + 1 týden). Je to pozadí,
+   ne prvky — do struktury stránky se kvůli tomu nesahá. */
+#postup .process_axis{
+  border-bottom:0;
+  padding-bottom:1.5rem;
+  background-image:linear-gradient(90deg,
+    #D8DCFB 0 calc(12.5% - 3px), transparent calc(12.5% - 3px) 12.5%,
+    #B7BEF7 12.5% calc(25% - 3px),  transparent calc(25% - 3px)  25%,
+    #8A96FF 25%   calc(50% - 3px),  transparent calc(50% - 3px)  50%,
+    #4A57EE 50%   calc(87.5% - 3px),transparent calc(87.5% - 3px) 87.5%,
+    #1D2BE8 87.5% 100%);
+  background-repeat:no-repeat;
+  background-size:100% .375rem;
+  background-position:0 100%;
+}
+#postup .process_axis-item{
+  border-left:1px solid var(--line);
+  padding-left:.5rem;
+  line-height:1.2;
+}
+
+/* ---------- 3. seznam fází ----------
+   .process_track přestává být pruh s absolutně umístěnými bloky
+   a je z něj obyčejný seznam řádků oddělených vlasovkou. */
+#postup .process_track{
+  position:static;
+  display:block;
+  height:auto;
+  margin:2.25rem 0 0;
+  border-top:1px solid var(--line);
+}
+
+/* Bublina přestane být bublinou: display:contents zruší její krabici
+   a její tři texty se stanou přímo poli mřížky řádku. Jsou to obyčejné
+   divy bez role, takže se tím nic nerozbije v přístupnosti. */
+#postup .process_track .process_pop{display:contents}
+
+#postup .process_track .process_block{
+  position:static;
+  left:auto;right:auto;
+  width:auto;height:auto;
+  background:none;
+  border-radius:0;
+  border-bottom:1px solid var(--line);
+  cursor:default;
+  display:grid;
+  grid-template-columns:10rem minmax(7rem,13rem) minmax(0,1fr);
+  column-gap:clamp(1.25rem,2.5vw,2.5rem);
+  row-gap:.25rem;
+  align-items:start;
+  padding:clamp(1.25rem,2vw,1.75rem) .5rem;
+  /* --sans na #postup neexistuje (je jen uvnitř #demo). Tohle je
+     proměnná, kterou Webflow používá pro běžný text. */
+  font-family:var(--_typography---font-styles--body);
+  font-size:1rem;
+  font-weight:400;
+  letter-spacing:0;
+  color:var(--ink);
+  transition:background-color .2s cubic-bezier(.2,.8,.2,1);
+}
+/* najetí myší je tichý podklad, žádný pohyb ani stín */
+#postup .process_track .process_block:hover{background-color:rgba(255,255,255,.65)}
+
+/* levý sloupec: kdy a jak dlouho, monospace, čtverec v barvě fáze */
+#postup .process_pop-when{
+  grid-column:1;grid-row:1;
+  display:flex;align-items:center;gap:.5rem;
+  margin:0;padding-top:.4rem;
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink);opacity:1;
+}
+#postup .process_pop-when::before{
+  content:"";flex:0 0 auto;width:.5rem;height:.5rem;border-radius:2px;
+  background-color:var(--tint);
+}
+#postup .process_block-weeks{
+  grid-column:1;grid-row:2;
+  margin-left:0;padding-left:1rem;
+  font-family:var(--mono);font-size:.71875rem;color:var(--mute);
+}
+
+/* prostřední sloupec: název fáze */
+#postup .process_block-name{
+  grid-column:2;grid-row:1 / span 2;
+  font-family:var(--display);
+  font-size:clamp(1.25rem,1.8vw,1.5rem);
+  font-weight:500;letter-spacing:-.02em;line-height:1.15;
+  color:var(--ink);
+}
+
+/* pravý sloupec: věta a odstavec */
+#postup .process_pop-title{
+  grid-column:3;grid-row:1;
+  font-family:var(--display);font-size:1.0625rem;font-weight:500;
+  letter-spacing:-.01em;line-height:1.35;margin:0;color:var(--ink);
+}
+#postup .process_pop-text{
+  grid-column:3;grid-row:2;
+  max-width:62ch;margin-top:.25rem;
+  font-size:.9375rem;line-height:1.55;color:var(--ink2);opacity:1;
+}
+
+/* ---------- 4. užší obrazovky ----------
+   Webflow schovává pravítko už pod 991 px. Na tabletu je na něj
+   ale místa dost, tak ho vracíme a mizí až na mobilu. */
+@media screen and (max-width:991px){
+  #postup .process_axis{display:grid}
+  #postup .process_track .process_block{
+    grid-template-columns:minmax(0,1fr) auto;
+    row-gap:.5rem;
+    padding:1.25rem .25rem;
+  }
+  #postup .process_pop-when{grid-column:1;grid-row:1}
+  #postup .process_block-weeks{grid-column:2;grid-row:1;justify-self:end;padding-left:0;padding-top:.4rem}
+  #postup .process_block-name{grid-column:1 / -1;grid-row:2}
+  #postup .process_pop-title{grid-column:1 / -1;grid-row:3}
+  #postup .process_pop-text{grid-column:1 / -1;grid-row:4;max-width:66ch}
+}
+@media screen and (max-width:767px){
+  #postup .process_axis{display:none}
+  #postup .process_track{margin-top:1.5rem}
+  #postup .process_block-name{font-size:1.375rem}
+}
+
+/* ---------- 5. kdo si nepřeje pohyb ---------- */
+@media (prefers-reduced-motion:reduce){
+  #postup .process_track .process_block{transition:none}
+}

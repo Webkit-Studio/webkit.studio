@@ -1,0 +1,278 @@
+/* ══════════════════════════════════════════════════════════════
+   Webkit.Studio — styly homepage nad rámec Webflow tříd
+   ══════════════════════════════════════════════════════════════
+   Jde do samostatného HTML Embedu na začátku main-wrapper, aby
+   se dalo měnit bez přeposílání markupu interaktivní ukázky.
+
+   Co sem patří: všechno, co potřebuje potomkový selektor, klíčové
+   snímky animace nebo vlastní breakpoint. Webflow tohle v třídách
+   neumí.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ---------- proměnné, ať se to čte stejně jako v prototypu ---------- */
+/* @global promenne */
+#obsah, .footer_component{
+  --bg:#ECEFF3;--card:#F7F8FA;--ink:#101321;--ink2:#3A3F52;--mute:#646A7E;
+  --line:#CDD2DC;--line2:#AEB5C4;--blue:#1D2BE8;--blue2:#1523B8;
+  --blue-soft:#D8DCFB;--lilac:#8A96FF;--dark:#101321;--dark-line:#2C3350;
+  --green:#17824A;--red:#E0483F;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --hdr:4rem;
+}
+/* @endglobal */
+
+/* ---------- sekce Tým je skrytá ---------- */
+#tym{display:none!important}
+
+/* ══════════ 1. SVISLÝ RYTMUS ══════════
+   Prototyp má hero přes celou výšku obrazovky a sekce na
+   clamp(72px, 9cqi, 128px). Webflow build měl 7rem, což je o
+   třetinu míň, a hero působilo zmáčknutě. */
+
+#hero{
+  min-height:calc(100svh - var(--hdr));
+  display:flex;
+  align-items:center;
+  padding-top:clamp(3rem,8vh,5.5rem);
+  padding-bottom:clamp(3rem,7vh,4.5rem);
+  isolation:isolate;
+  /* Záře jsou 544 px široké a přesahují doprava. Na mobilu kvůli nim
+     prohlížeč roztáhl rozvržení na 521 px a celou stránku zmenšil.
+     clip ořízne jen vodorovně a nedělá z hera posuvnou oblast. */
+  overflow-x:clip;
+}
+#hero > .padding-global{width:100%}
+#hero .padding-section-large{padding-top:0;padding-bottom:0}
+#hero .hero_row{margin-top:clamp(1.5rem,5vh,3.5rem)}
+
+/* Slova v nadpisu reagují na kurzor: čím blíž myš je, tím je slovo
+   tučnější, užší a nakonec modré. Prototyp v8 to měl, do Webflow to
+   nepřešlo, protože nadpis byl jen holý text bez obalů. Obaly dělá
+   skript na konci stránky, tady je jen přechod.
+   Na dotyku se to nespustí vůbec — tam by efekt nikdo neviděl. */
+#hero .hero_title .w{
+  display:inline-block;
+  font-variation-settings:inherit;
+  transition:font-variation-settings .18s ease-out,color .18s;
+}
+@media (prefers-reduced-motion:reduce){
+  #hero .hero_title .w{transition:none}
+}
+
+/* ostatní sekce dostanou vzduch podle prototypu */
+#brzdi .padding-section-medium,
+#brzdi .padding-section-large,
+#sluzby .padding-section-medium,
+#sluzby .padding-section-large,
+#postup .padding-section-medium,
+#postup .padding-section-large,
+#kontakt .padding-section-large{
+  padding-top:clamp(4.5rem,9vw,8rem);
+  padding-bottom:clamp(4.5rem,9vw,8rem);
+}
+
+@media screen and (max-width:767px){
+  #hero{min-height:0;padding-top:clamp(2.5rem,7vh,3.5rem);padding-bottom:2.5rem}
+  #brzdi .padding-section-medium,#brzdi .padding-section-large,
+  #sluzby .padding-section-medium,#sluzby .padding-section-large,
+  #postup .padding-section-medium,#postup .padding-section-large,
+  #kontakt .padding-section-large{padding-top:3.5rem;padding-bottom:3.5rem}
+}
+
+/* @global odhalovani */
+/* ══════════ 2. ODHALOVÁNÍ PŘI SCROLLU ══════════
+   Stejná mechanika jako prototyp: prvek startuje níž a průhledný,
+   skript mu přidá .is-in. Bez skriptu je vidět všechno, takže se
+   nemůže stát, že by obsah zůstal schovaný. */
+
+.wk-rv{opacity:1;transform:none}
+.wk-js .wk-rv{
+  opacity:0;transform:translateY(22px);
+  transition:opacity .8s var(--ease),transform .9s var(--ease);
+}
+.wk-js .wk-rv.is-in{opacity:1;transform:none}
+.wk-js .wk-rv.wk-d1{transition-delay:.08s}
+.wk-js .wk-rv.wk-d2{transition-delay:.16s}
+.wk-js .wk-rv.wk-d3{transition-delay:.24s}
+
+@media (prefers-reduced-motion:reduce){
+  .wk-js .wk-rv{opacity:1;transform:none;transition:none}
+}
+/* @endglobal */
+
+/* ══════════ 3. KARTY V SEKCI BRZDÍ ══════════
+   Kresby v kartách jsou v prototypu animované a rozjedou se při
+   najetí myší. Na dotyku se rozjedou, jakmile je karta vidět. */
+
+#brzdi .problem_card{
+  transition:transform .35s var(--ease),box-shadow .35s;
+}
+#brzdi .problem_card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 30px 60px -40px rgba(16,19,33,.35);
+}
+
+#brzdi .problem_pill,#brzdi .problem_pill::before,
+#brzdi .problem_avatar,
+#brzdi .problem_curve-label{
+  animation-play-state:paused;
+}
+#brzdi .problem_card:hover .problem_pill,
+#brzdi .problem_card:hover .problem_pill::before,
+#brzdi .problem_card:hover .problem_avatar,
+#brzdi .problem_card:hover .problem_curve-label,#brzdi .problem_card:hover .wk-krivka path{animation-play-state:running}
+
+/* na dotyku se nedá najet myší, tak se to rozjede, jakmile je karta vidět */
+@media (hover:none){
+  #brzdi .problem_card.is-in .problem_pill,
+  #brzdi .problem_card.is-in .problem_pill::before,
+  #brzdi .problem_card.is-in .problem_avatar,
+  #brzdi .problem_card.is-in .problem_curve-label,#brzdi .problem_card.is-in .wk-krivka path{animation-play-state:running}
+}
+
+/* štítky se rozjedou doprava a zpátky, tečka se u toho rozsvítí */
+#brzdi .problem_pill{animation:wk-pill 3.2s var(--ease) infinite}
+#brzdi .problem_pill.is-p2{animation-delay:.25s}
+#brzdi .problem_pill.is-p3{animation-delay:.5s}
+#brzdi .problem_pill.is-p4{animation-delay:.75s}
+/* Webflow verze štítku nemá tečku jako prvek, doděláme ji pseudoprvkem,
+   ať nemusím sahat do struktury stránky */
+#brzdi .problem_pill{display:inline-flex;align-items:center;gap:.5rem}
+#brzdi .problem_pill::before{
+  content:"";width:.75rem;height:.75rem;border-radius:50%;
+  background-color:#AEB5C4;flex:0 0 auto;
+  animation:wk-dot 3.2s ease-in-out infinite;animation-play-state:inherit;
+}
+#brzdi .problem_pill.is-p1::before,#brzdi .problem_pill.is-p2::before{background-color:#1D2BE8}
+#brzdi .problem_pill.is-p2::before{animation-delay:.25s}
+#brzdi .problem_pill.is-p3::before{animation-delay:.5s}
+#brzdi .problem_pill.is-p4::before{animation-delay:.75s}
+@keyframes wk-pill{0%,100%{transform:translateX(0)}45%{transform:translateX(14px)}}
+@keyframes wk-dot{0%,20%{background-color:#AEB5C4}45%,70%{background-color:#1D2BE8}100%{background-color:#AEB5C4}}
+
+/* chybějící členové týmu probliknou, jako by tam měli být */
+#brzdi .problem_avatar.is-a3,
+#brzdi .problem_avatar.is-a4{animation:wk-gone 2.8s ease-in-out infinite}
+#brzdi .problem_avatar.is-a4{animation-delay:.7s}
+@keyframes wk-gone{
+  0%,100%{opacity:.4;transform:translate(0,-50%)}
+  40%,60%{opacity:1;border-style:solid;transform:translate(0,calc(-50% - 4px))}
+}
+
+/* Křivka byla poskládaná z divů se zaoblenými rohy, takže místo vzestupu
+   a pádu kreslila V. Skript na její místo vloží stejné SVG jako prototyp v8,
+   původní tři divy schováme. */
+#brzdi .is-curve .problem_curve-rise,
+#brzdi .is-curve .problem_curve-fall,
+#brzdi .is-curve .problem_curve-base{display:none}
+#brzdi .wk-krivka{position:absolute;inset:0;width:100%;height:100%}
+#brzdi .wk-krivka .ln{stroke-dasharray:300;stroke-dashoffset:0;animation:wk-draw2 3s var(--ease) infinite}
+#brzdi .wk-krivka .drop{stroke-dasharray:6 4;animation:wk-dash 1.2s linear infinite}
+@keyframes wk-draw2{0%{stroke-dashoffset:300}45%,100%{stroke-dashoffset:0}}
+@keyframes wk-dash{to{stroke-dashoffset:-20}}
+#brzdi .problem_curve-label{animation:wk-label 3.2s var(--ease) infinite}
+@keyframes wk-label{
+  0%,30%{opacity:0}
+  45%,100%{opacity:1}
+}
+
+@media (prefers-reduced-motion:reduce){
+  #brzdi .problem_pill,#brzdi .problem_pill::before,#brzdi .problem_avatar,
+    #brzdi .problem_curve-label{animation:none!important;clip-path:none!important;opacity:1!important}
+  #brzdi .problem_card:hover{transform:none}
+}
+
+/* ══════════ 4. INTERAKTIVNÍ UKÁZKA ══════════
+   Veškeré styly ukázky žijí v repu v site/webflow/demo.css a nasazují se
+   uvnitř HTML Embedu. Tady zůstává jen pojistka proti kolizi tříd:
+   .tag už Webflow používá pro štítky u projektů a vnucovala štítkům
+   v ukázce nowrap, rámeček a verzálky, takže text z bubliny vytékal.
+   Uvnitř ukázky se proto jmenují .dtag — tohle je druhý zámek. */
+#demo.section_demo .fx .dtag{
+  white-space:normal;border:0;text-transform:none;letter-spacing:0}
+
+/* @global kontakt */
+/* ══════════ 5. KONTAKT ══════════
+   Nadpis vlevo, formulář vpravo. Nadpis má pevné zalomení na tři řádky,
+   na mobilu se zalomení ruší, protože se dlouhý řádek nevejde. */
+
+/* Sekce zabírá celou obrazovku a nadpis jde přes celou šířku. V užším
+   sloupci (592 px) se prostřední řádek lámal na dva, protože rotující
+   slovo se nesmí zalomit — proto ta čtyři řádky místo tří. */
+#kontakt{min-height:100svh;display:flex;align-items:center}
+#kontakt>.padding-global{width:100%}
+#kontakt .contact_layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,.8fr);
+  gap:clamp(2rem,5vw,4.5rem);
+  align-items:start;
+}
+#kontakt .contact_heading{grid-column:1 / -1;grid-row:1;max-width:none;margin-bottom:clamp(1.5rem,4vh,3rem)}
+/* Třída .contact_actions má ve Webflow flex-direction:column, ale
+   spočítaná hodnota vycházela row — a s flex-wrap:wrap se rychlý
+   kontakt a autorský blok postavily vedle sebe. Tady se to dorovnává. */
+#kontakt .contact_actions{
+  grid-column:1;grid-row:2;margin-top:0;align-self:start;
+  display:flex;flex-direction:column;flex-wrap:nowrap;align-items:flex-start;
+}
+
+/* Ikona LinkedInu stála o 4 px nad středem. SVG je inline prvek, takže
+   pod ním zůstávalo místo na dotažnice. display:block ho ruší. */
+#kontakt .contact_person-link{transition:color .2s,border-color .2s,background-color .2s}
+#kontakt .contact_person-link svg{display:block}
+#kontakt .contact_person-link:hover{
+  color:#F1F2F6;
+  border-color:#8A96FF;
+  background-color:rgba(138,150,255,.18);
+}
+#kontakt .contact_person-link:focus-visible{outline:2px solid #8A96FF;outline-offset:3px}
+#kontakt .contact_layout > .w-form{grid-column:2;grid-row:2}
+#kontakt .contact_rot{white-space:nowrap}
+
+#kontakt .w-form form{display:grid;gap:.875rem}
+#kontakt .w-form label{
+  margin-bottom:.3rem;
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.09em;
+  text-transform:uppercase;color:rgba(241,242,246,.62);
+}
+#kontakt .w-form input,#kontakt .w-form textarea{
+  width:100%;padding:.875rem 1rem;
+  border:1px solid #2C3350;border-radius:.75rem;
+  background-color:rgba(255,255,255,.04);color:#F1F2F6;
+  font-family:inherit;font-size:1rem;
+  transition:border-color .15s,background-color .15s;
+}
+#kontakt .w-form textarea{min-height:7rem;resize:vertical}
+/* Na dotyku je táhlo k ničemu a v rohu pole je vidět jako smítko. */
+@media (hover:none){#kontakt .w-form textarea{resize:none}}
+#kontakt .w-form input:focus,#kontakt .w-form textarea:focus{
+  outline:none;border-color:#8A96FF;background-color:rgba(255,255,255,.07);
+}
+#kontakt .w-form input[type=submit]{
+  margin-top:.375rem;min-height:2.75rem;
+  background-color:#FFFFFF;border-color:#FFFFFF;color:#101321;
+  font-weight:600;cursor:pointer;
+}
+#kontakt .w-form input[type=submit]:hover{background-color:#F1F2F6;border-color:#F1F2F6}
+#kontakt .w-form-done{background-color:rgba(23,130,74,.18);border:1px solid #17824A}
+#kontakt .w-form-fail{background-color:rgba(224,72,63,.16);border:1px solid #E0483F}
+#kontakt .w-form-done,#kontakt .w-form-fail{
+  border-radius:.75rem;padding:1rem 1.125rem;color:#F1F2F6;font-size:.9375rem;
+}
+
+@media screen and (max-width:991px){
+  #kontakt{min-height:0;display:block}
+  #kontakt .contact_layout{grid-template-columns:minmax(0,1fr)}
+  #kontakt .contact_heading,#kontakt .contact_actions,
+  #kontakt .contact_layout > .w-form{grid-column:1;grid-row:auto}
+  #kontakt .contact_actions{margin-top:1.25rem}
+}
+@media screen and (max-width:767px){
+  /* Zalomení nadpisu drží i na mobilu: tři řádky se do 393 px vejdou
+     i s nejdelším rotujícím slovem. Bez <br> by chyběla mezera za čárkou. */
+  #kontakt .contact_rot{white-space:normal}
+}
+/* @endglobal */
+

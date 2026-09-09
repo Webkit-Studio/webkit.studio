@@ -1,0 +1,154 @@
+/* ══════════════════════════════════════════════════════════════
+   POSTUP — varianta B „Karty na pravítku"
+   Pruh zůstane vodorovný, ale přestane být gantt diagramem:
+   pět stejně širokých karet, v každé malé pravítko osmi týdnů
+   s vyznačenou fází. Šířka už nenese informaci, tu nese pravítko
+   a text. Všechno je vidět hned, nic se neschovává.
+
+   KAM TO PATŘÍ: na konec souboru site/webflow/page-late.css, tedy do
+   HTML Embedu na konci stránky. Do hlavičky ne: nasazený <style> v
+   hlavičce má 7 818 znaků z povolených 10 000, takže tam zbývá 2 182 —
+   a tenhle soubor má po odstranění komentářů 3 296. Nevejde se.
+
+   NEJDŘÍV SMAZAT (jinak tohle nebude fungovat):
+   1. site/webflow/page.css — celý oddíl „4b. POSTUP NA UZKYCH SIRKACH"
+      (řádky 178–204). Zůstal by po něm pseudoprvek ::after s „+"
+      uvnitř každé karty na mobilu, který nemá co rozbalovat.
+   2. site/webflow/demo.css — řádky 168–170.
+   3. site/webflow/page-home.js — blok „postup: na mobilu se blok
+      po klepnuti rozbali" (proměnná bl a bl.forEach).
+   4. ve Webflow atribut tabindex="0" na .process_block.
+   Všechno v JEDNOM publikování společně s tímhle souborem.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ---------- 1. barvy fází a výřez pravítka ----------
+   --tint … barva fáze (lila → plná značková modrá; v pravítku musí
+            být vidět proti šedým dílkům, proto ne bledší)
+   --w    … kolik z osmi týdnů fáze zabírá
+   --p    … kam se ten výřez v pravítku posadí. Procentní pozice
+            pozadí se počítá ze zbytku (šířka pruhu − šířka výřezu),
+            ne z celku — proto 14,2857 / 33,3333 / 80 / 100. */
+#postup .process_block.is-b1{--tint:#8A96FF;--w:12.5%;--p:0%}
+#postup .process_block.is-b2{--tint:#6E7BFB;--w:12.5%;--p:14.2857%}
+#postup .process_block.is-b3{--tint:#4A57EE;--w:25%;  --p:33.3333%}
+#postup .process_block.is-b4{--tint:#2A38EA;--w:37.5%;--p:80%}
+#postup .process_block.is-b5{--tint:#1D2BE8;--w:12.5%;--p:100%}
+
+/* ---------- 2. pravítko nad pásem zůstane, jen ztichne ---------- */
+#postup .process_axis{
+  border-bottom:1px solid var(--line);
+  padding-bottom:.625rem;
+}
+#postup .process_axis-item{padding-left:.125rem}
+
+/* ---------- 3. pás pěti karet ---------- */
+#postup .process_track{
+  position:static;
+  height:auto;
+  margin:1.25rem 0 0;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:.75rem;
+  align-items:stretch;
+}
+
+/* Bublina přestane být bublinou: display:contents zruší její krabici
+   a texty se stanou přímo položkami karty. Jsou to obyčejné divy
+   bez role, takže se tím nic nerozbije v přístupnosti. */
+#postup .process_track .process_pop{display:contents}
+
+#postup .process_track .process_block{
+  position:relative;
+  left:auto;right:auto;
+  width:auto;height:auto;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:0;
+  padding:1.125rem 1.125rem 1.375rem;
+  background-color:#fff;
+  border:1px solid var(--line);
+  border-radius:1rem;
+  cursor:default;
+  /* --sans na #postup neexistuje (je jen uvnitř #demo). */
+  font-family:var(--_typography---font-styles--body);
+  font-size:1rem;
+  font-weight:400;
+  letter-spacing:0;
+  color:var(--ink);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1),
+             box-shadow .3s cubic-bezier(.2,.8,.2,1),
+             border-color .3s;
+}
+#postup .process_track .process_block:hover{
+  transform:translateY(-3px);
+  border-color:var(--line2);
+  box-shadow:0 26px 50px -34px rgba(16,19,33,.5);
+}
+
+/* pravítko v kartě: osm dílků a v nich vybarvená fáze */
+#postup .process_track .process_block::before{
+  content:"";
+  order:0;
+  display:block;
+  height:.375rem;
+  margin-bottom:1rem;
+  border-radius:99px;
+  background-image:
+    linear-gradient(90deg,var(--tint) 0 100%),
+    repeating-linear-gradient(90deg,
+      var(--line) 0 calc(12.5% - 2px),
+      transparent calc(12.5% - 2px) 12.5%);
+  background-repeat:no-repeat;
+  background-size:var(--w) 100%, 100% 100%;
+  background-position:var(--p) 0, 0 0;
+}
+
+/* pořadí textů v kartě: kdy → název → jak dlouho → věta → odstavec */
+#postup .process_pop-when{
+  order:1;margin:0 0 .375rem;
+  font-family:var(--mono);font-size:.6875rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--blue);opacity:1;
+}
+#postup .process_block-name{
+  order:2;
+  font-family:var(--display);font-size:1.375rem;font-weight:500;
+  letter-spacing:-.02em;line-height:1.1;color:var(--ink);
+}
+#postup .process_block-weeks{
+  order:3;margin:.25rem 0 .875rem;
+  font-family:var(--mono);font-size:.71875rem;color:var(--mute);
+}
+#postup .process_pop-title{
+  order:4;margin:0 0 .5rem;
+  font-family:var(--display);font-size:1rem;font-weight:500;
+  letter-spacing:-.01em;line-height:1.3;color:var(--ink);
+}
+#postup .process_pop-text{
+  order:5;
+  font-size:.875rem;line-height:1.5;color:var(--ink2);opacity:1;
+}
+
+/* ---------- 4. užší obrazovky ----------
+   Pod 1100 px je na pět sloupců málo. Jde se na dva a pátá karta
+   se roztáhne přes oba — pět karet ve třech sloupcích by nechalo
+   v druhé řadě prázdné místo. */
+@media screen and (max-width:1100px){
+  #postup .process_track{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #postup .process_track .process_block.is-b5{grid-column:1 / -1}
+  #postup .process_axis{display:none}
+}
+@media screen and (max-width:767px){
+  #postup .process_track{grid-template-columns:minmax(0,1fr);gap:.625rem;margin-top:0}
+  #postup .process_track .process_block.is-b5{grid-column:auto}
+  #postup .process_track .process_block{padding:1.125rem 1.125rem 1.25rem}
+  #postup .process_block-name{font-size:1.25rem}
+  #postup .process_pop-text{font-size:.9375rem}
+}
+
+/* ---------- 5. kdo si nepřeje pohyb ----------
+   Karta se nezvedá ani nestíní, jen ztmavne rámeček. */
+@media (prefers-reduced-motion:reduce){
+  #postup .process_track .process_block{transition:border-color .3s}
+  #postup .process_track .process_block:hover{transform:none;box-shadow:none}
+}

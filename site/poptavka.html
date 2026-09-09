@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Poptávka · Webkit.Studio</title>
+<meta name="description" content="Napište nám, co právě řešíte. Vyberete si termín, během 30 minut probereme, co řešíte, a navrhneme řešení a zadání.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Instrument+Sans:ital,wdth,wght@0,75..100,400..700;1,75..100,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="webkit.css">
+</head>
+<body class="page-form">
+<div class="cur" id="cur"></div>
+
+<header class="top" id="top" data-screen-label="P0 Hlavička"><div class="wrap in">
+  <a class="brand" href="index.html"><img src="assets/symbol-blue.png" alt="Webkit.Studio"><span>Webkit.Studio</span></a>
+  <nav class="main"><a href="index.html#sluzby">Služby</a><a href="index.html#postup">Postup</a><a href="index.html#projekty">Projekty</a><a href="index.html#tym">Tým</a></nav>
+  <a class="btn ghost" href="index.html"><span class="l">Zpět na web</span><span class="s">Zpět</span></a>
+</div></header>
+
+<main>
+<section class="sec formpage" id="poptavka" data-screen-label="P1 Poptávka"><div class="wrap fgrid">
+  <div class="fintro">
+    <h1 id="q"><span class="w">Napište</span> <span class="w">nám,</span> <span class="w">co</span> <span class="w">právě</span> <span class="w">řešíte.</span></h1>
+    <ul class="fsteps rv d1"><li><b>1</b>Vyberete si termín</li><li><b>2</b>Během 30 minut probereme, co řešíte</li><li><b>3</b>Navrhneme řešení a zadání</li></ul>
+    <p class="fnote rv d2">Dost možná se potkáme víckrát než jednou, abychom co nejlépe pochopili vaše podnikání a cíle projektu.</p>
+  </div>
+  <div>
+    <form class="f" id="form" novalidate>
+      <label class="big"><span>Co řešíte</span><div class="tawrap"><div class="ghost" id="ghost"></div><textarea name="co" rows="5" required id="co"></textarea></div></label>
+      <label>Jméno<input name="jmeno" type="text" required autocomplete="name"></label>
+      <label>E-mail<input name="email" type="email" required autocomplete="email"></label>
+      <label>Telefon<input name="telefon" type="tel" autocomplete="tel"></label>
+      <label>Firma nebo IČO<input name="firma" type="text" required autocomplete="organization"></label>
+      <label>Velikost firmy<div class="seg" id="size"><button type="button" data-v="1-10">1–10</button><button type="button" data-v="10-50">10–50</button><button type="button" data-v="50-250">50–250</button><button type="button" data-v="250+">250+</button></div></label>
+      <button class="btn send" type="submit" data-mag>Odeslat a vybrat termín</button>
+      <p class="fine">Odesláním souhlasíte se <a href="osobni-udaje.html">zpracováním osobních údajů</a>. Použijeme je jen k odpovědi na vaši poptávku.</p>
+    </form>
+    <div class="done" id="done">
+      <h2>Díky, máme to.</h2>
+      <p>Ozveme se do jednoho pracovního dne. Jestli chcete rovnou termín, vyberte si půl hodiny tady.</p>
+      <div class="cal" id="cal"><div class="ph">Tady se po odeslání načte kalendář s volnými termíny přímo ve stránce.</div></div>
+      <p style="margin-top:14px"><a class="btn ghost" href="https://calendar.app.google/emBd2FDj5xsx6edo7" target="_blank" rel="noopener">Otevřít kalendář v novém okně</a></p>
+    </div>
+  </div>
+</div></section>
+</main>
+
+<footer class="ft" data-screen-label="P2 Patička"><div class="wrap in"><div>Webkit.Studio</div><div><a href="mailto:inbox@webkit.studio">inbox@webkit.studio</a> · <a href="https://www.linkedin.com/company/webkit-studio-prague/" target="_blank" rel="noopener">LinkedIn</a> · <a href="osobni-udaje.html">Osobní údaje</a></div><div>IČO doplníme · 2022 → dnes</div></div></footer>
+
+<script src="webkit.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+# jsDelivr drží soubory z větve v cache 12 hodin. Bez tohohle by se
+# push projevil na webu až druhý den. Purge je obyčejný GET, po něm
+# je nová verze na webu do pár vteřin.
+name: Purge jsDelivr
+
+on:
+  push:
+    branches: [main]
+    paths: ['site/webflow/dist/**']
+  workflow_dispatch:
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vyčistit cache
+        run: |
+          set -euo pipefail
+          zaklad="https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/site/webflow/dist"
+          for soubor in site/webflow/dist/*; do
+            jmeno=$(basename "$soubor")
+            echo "→ $jmeno"
+            curl -sS --retry 3 --retry-delay 2 "$zaklad/$jmeno"
+            echo
+          done
+
+      - name: Ověřit, že CDN vrací novou verzi
+        run: |
+          set -euo pipefail
+          sleep 5
+          chyby=0
+          for soubor in site/webflow/dist/*; do
+            jmeno=$(basename "$soubor")
+            url="https://cdn.jsdelivr.net/gh/${GITHUB_REPOSITORY}@main/site/webflow/dist/$jmeno"
+            curl -sS --retry 3 --retry-delay 3 "$url" -o /tmp/$jmeno
+            if cmp -s "$soubor" "/tmp/$jmeno"; then
+              echo "✓ $jmeno sedí"
+            else
+              echo "✗ $jmeno se liší od repa (v repu $(wc -c < "$soubor") B, z CDN $(wc -c < /tmp/$jmeno) B)"
+              chyby=1
+            fi
+          done
+          exit $chyby
