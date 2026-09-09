@@ -1,4 +1,4 @@
-# Webflow homepage — zdroje
+# Webflow — zdroje stránek
 
 Co je v tomhle adresáři, je zdroj pravdy. Do Webflow se to dostává přes MCP,
 ne ručním kopírováním.
@@ -8,7 +8,8 @@ ne ručním kopírováním.
 | `demo.css` | `<style>` na začátku HTML Embedu v sekci `#demo` |
 | `demo.html` | markup za tím `<style>` ve stejném embedu |
 | `page-home.js` | HTML Embed na konci stránky (za patičkou), zabalený v `<script>` |
-| `page.css` | vlastní kód stránky, hlavička (`set_page_freeform_code`) |
+| `page.css` | vlastní kód stránky, hlavička (`set_page_freeform_code`) — homepage |
+| `page-kontakt.css` | totéž, ale stránka `/kontakt` |
 | `analytika/site-head.html` | vlastní kód webu, hlavička (`set_site_freeform_code`) |
 | `analytika/1-consent.js` | registrovaný skript `wkconsentgtm`, hlavička |
 | `analytika/2-cookiebar.js` | registrovaný skript `wkcookiebar`, patička |
@@ -30,6 +31,30 @@ parametry nesou skoro vždycky. Na `/osobni-udaje` je totéž s její adresou.
 
 Když se hlavička přenasazuje, musí jít nahoru **i tyhle dva řádky** — přepisuje
 se celý blok najednou.
+
+## Stránka /kontakt
+
+Vznikla duplikací homepage. **Duplikace nepřenáší vlastní kód stránky** —
+hlavička i patička nové stránky přišly prázdné, i když embed na konci
+stránky se zkopíroval. Když se tedy zakládá další stránka duplikací, patří
+mezi první kroky `get_page_freeform_code` a doplnění hlavičky.
+
+Stránka má vlastní `page-kontakt.css` místo celého `page.css`. Nese jen to,
+co tahle stránka používá: proměnné, odsazení sekcí, odhalování při scrollu
+a sekci `#kontakt`. Pravidla pro `#hero`, `#brzdi`, `#demo` a `#postup` by
+tu byly mrtvá váha.
+
+Skladba sekcí: `#kontakt` (formulář) → `#recenze` → `#faq` → `#vyzva`.
+Recenze, FAQ a výzva jedou na stejném pozadí, takže plné odsazení drží jen
+okraje toho bloku — jinak mezi nimi vznikne prázdné místo přes dvě obrazovky.
+
+FAQ je nativní `<details>`/`<summary>`, žádný JavaScript. `.reviews_grid`
+má breakpointy `medium` (dva sloupce) a `small` (jeden); bez nich tři karty
+roztáhly mobilní rozvržení na 555 px a zmenšily celou stránku.
+
+Odkazy v hlavičce míří na `/#sluzby`, `/#postup`, `/#projekty` — na téhle
+stránce ty sekce nejsou. Pozor: `set_attributes` na `href` u odkazu selže
+vnitřní chybou, musí se použít `set_link`.
 
 ## Proč embed a ne vlastní kód stránky
 
