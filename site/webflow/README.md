@@ -37,8 +37,7 @@ Co je mezi značkami, použije víc stránek. Co není, patří jen té jedné.
 
 ## Co je vložené ve Webflow
 
-**Site settings → Custom code → Head code** (kromě theme-color, preloadu
-písem a stylů cookie lišty):
+**Site settings → Custom code → Head code** (vedle theme-color a preloadu písem):
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/webkit-studio/webkit-studio@main/site/webflow/dist/global.css">
@@ -52,6 +51,13 @@ písem a stylů cookie lišty):
 
 Na stránce pak jen to, co je jen její — homepage `home.css` v hlavičce
 stránky a `home.js` v embedu na konci, `/kontakt` obdobně `kontakt.css`.
+
+## Zbývá uklidit
+
+Styly cookie lišty jsou zatím na dvou místech: v `lista-souhlasu.css`
+(a tedy i v `global.css`) a pořád taky natvrdo v hlavičce Webflow.
+Duplicitní CSS nevadí, ale až se sloučí větev, z Webflow se ta kopie
+smaže a v hlavičce zůstane jen theme-color, preload písem a odkaz na CDN.
 
 ## Na co si dát pozor
 
